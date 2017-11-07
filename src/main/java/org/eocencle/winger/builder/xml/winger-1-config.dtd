@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!ELEMENT configuration (responses?)>
+
+<!ELEMENT responses (response+)>
+
+<!ELEMENT response EMPTY>
+<!ATTLIST response 
+resource CDATA #IMPLIED
+>

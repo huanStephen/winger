@@ -11,6 +11,8 @@ import java.util.Set;
 
 import org.eocencle.winger.mapping.Environment;
 import org.eocencle.winger.reflection.MetaObject;
+import org.eocencle.winger.type.TypeAliasRegistry;
+import org.eocencle.winger.type.TypeHandlerRegistry;
 
 public class Configuration {
 	protected Environment environment;

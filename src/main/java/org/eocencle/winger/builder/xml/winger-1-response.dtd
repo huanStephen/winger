@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!ELEMENT response (branch* )+>
+<!ATTLIST response
+contextpath CDATA #REQUIRED
+>
+
+<!ELEMENT branch (#PCDATA | include | trim | where | set | foreach | choose | if | bind)*>
+<!ATTLIST branch
+action CDATA #REQUIRED
+method (get | post | put | delete) #IMPLIED width CDATA "get"
+>
+
+<!-- Dynamic -->
+
+<!ELEMENT include (property+)?>
+<!ATTLIST include
+refid CDATA #REQUIRED
+>
+
+<!ELEMENT bind EMPTY>
+<!ATTLIST bind
+ name CDATA #REQUIRED
+ value CDATA #REQUIRED
+>
+
+<!ELEMENT trim (#PCDATA | include | trim | where | set | foreach | choose | if | bind)*>
+<!ATTLIST trim
+prefix CDATA #IMPLIED
+prefixOverrides CDATA #IMPLIED
+suffix CDATA #IMPLIED
+suffixOverrides CDATA #IMPLIED
+>
+<!ELEMENT where (#PCDATA | include | trim | where | set | foreach | choose | if | bind)*>
+<!ELEMENT set (#PCDATA | include | trim | where | set | foreach | choose | if | bind)*>
+
+<!ELEMENT foreach (#PCDATA | include | trim | where | set | foreach | choose | if | bind)*>
+<!ATTLIST foreach
+collection CDATA #REQUIRED
+item CDATA #IMPLIED
+index CDATA #IMPLIED
+open CDATA #IMPLIED
+close CDATA #IMPLIED
+separator CDATA #IMPLIED
+>
+
+<!ELEMENT choose (when* , otherwise?)>
+<!ELEMENT when (#PCDATA | include | trim | where | set | foreach | choose | if | bind)*>
+<!ATTLIST when
+test CDATA #REQUIRED
+>
+<!ELEMENT otherwise (#PCDATA | include | trim | where | set | foreach | choose | if | bind)*>
+
+<!ELEMENT if (#PCDATA | include | trim | where | set | foreach | choose | if | bind)*>
+<!ATTLIST if
+test CDATA #REQUIRED
+>

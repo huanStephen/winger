@@ -8,6 +8,8 @@ import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
@@ -15,32 +17,21 @@ import javax.xml.xpath.XPathFactory;
 
 import org.eocencle.winger.builder.xml.XMLMapperEntityResolver;
 import org.eocencle.winger.scripting.xmltags.OgnlCache;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
+import org.xml.sax.Attributes;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
+import org.xml.sax.helpers.DefaultHandler;
 
 public class Test {
 
 	public static void main(String[] args) {
-		try {
-			testSax();
-		} catch (XPathExpressionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SAXException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ParserConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		testXPath();
 	}
 	
 	public static void testOgnl() {
@@ -49,44 +40,107 @@ public class Test {
 		System.out.println(OgnlCache.getValue("1 == 1 && 5 > param", params));
 	}
 	
-	public static void testSax() throws SAXException, IOException, ParserConfigurationException, XPathExpressionException {
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		factory.setValidating(true);
+	public static void testSax() {
+		try {
+			SAXParser parser = SAXParserFactory.newInstance().newSAXParser();
+			SaxParseXml parseXml = new SaxParseXml();
+			InputStream is = Test.class.getClassLoader().getResourceAsStream("conf.xml");
+			parser.parse(is, parseXml);
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
+		} catch (SAXException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static class SaxParseXml extends DefaultHandler {
 
-		factory.setNamespaceAware(false);
-		factory.setIgnoringComments(true);
-		factory.setIgnoringElementContentWhitespace(false);
-		factory.setCoalescing(false);
-		factory.setExpandEntityReferences(true);
+		@Override
+		public void startDocument() throws SAXException {
+			super.startDocument();
+		}
 
-		DocumentBuilder builder = factory.newDocumentBuilder();
-		builder.setEntityResolver(new XMLMapperEntityResolver());
-		builder.setErrorHandler(new ErrorHandler() {
-			public void error(SAXParseException exception) throws SAXException {
-				throw exception;
+		@Override
+		public void endDocument() throws SAXException {
+			super.endDocument();
+		}
+
+		@Override
+		public void startElement(String uri, String localName, String qName, Attributes attributes)
+				throws SAXException {
+			System.out.println(qName);
+			for (int i = 0; i < attributes.getLength(); i ++) {
+				System.out.println(attributes.getQName(i) + "," + attributes.getValue(i));
+				
 			}
+			super.startElement(uri, localName, qName, attributes);
+		}
 
-			public void fatalError(SAXParseException exception) throws SAXException {
-				throw exception;
-			}
+		@Override
+		public void endElement(String uri, String localName, String qName) throws SAXException {
+			System.out.println(qName);
+			super.endElement(uri, localName, qName);
+		}
 
-			public void warning(SAXParseException exception) throws SAXException {
-			}
-		});
-		InputStream is = Test.class.getClassLoader().getResourceAsStream("conf.xml");
+		@Override
+		public void characters(char[] ch, int start, int length) throws SAXException {
+			super.characters(ch, start, length);
+		}
 		
-		Document doc = builder.parse(new InputSource(is));
-		
-		XPathFactory xfactory = XPathFactory.newInstance();
-		XPath xpath = xfactory.newXPath();
-		Node node = (Node) xpath.evaluate("/configuration", doc, XPathConstants.NODE);
-		Node environments = (Node) xpath.evaluate("environments", node, XPathConstants.NODE);
-		NamedNodeMap attributeNodes = environments.getAttributes();
-		if (attributeNodes != null) {
-			for (int i = 0; i < attributeNodes.getLength(); i++) {
-				Node attribute = attributeNodes.item(i);
-				System.out.println(attribute.getNodeName() + "," + attribute.getNodeValue());
+	}
+	
+	public static void testXPath() {
+		try {
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			factory.setValidating(true);
+
+			factory.setNamespaceAware(false);
+			factory.setIgnoringComments(true);
+			factory.setIgnoringElementContentWhitespace(false);
+			factory.setCoalescing(false);
+			factory.setExpandEntityReferences(true);
+
+			DocumentBuilder builder = factory.newDocumentBuilder();
+			builder.setEntityResolver(new XMLMapperEntityResolver());
+			builder.setErrorHandler(new ErrorHandler() {
+				public void error(SAXParseException exception) throws SAXException {
+					throw exception;
+				}
+
+				public void fatalError(SAXParseException exception) throws SAXException {
+					throw exception;
+				}
+
+				public void warning(SAXParseException exception) throws SAXException {
+				}
+			});
+			InputStream is = Test.class.getClassLoader().getResourceAsStream("conf.xml");
+			
+			Document doc = builder.parse(new InputSource(is));
+			
+			XPathFactory xfactory = XPathFactory.newInstance();
+			XPath xpath = xfactory.newXPath();
+			Node node = (Node) xpath.evaluate("/configuration", doc, XPathConstants.NODE);
+			Node environments = (Node) xpath.evaluate("environments", node, XPathConstants.NODE);
+			NamedNodeMap attributeNodes = environments.getAttributes();
+			if (attributeNodes != null) {
+				for (int i = 0; i < attributeNodes.getLength(); i++) {
+					Node attribute = attributeNodes.item(i);
+					System.out.println(attribute.getNodeName() + "," + attribute.getNodeValue());
+				}
 			}
+		} catch (XPathExpressionException e) {
+			e.printStackTrace();
+		} catch (DOMException e) {
+			e.printStackTrace();
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
+		} catch (SAXException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
