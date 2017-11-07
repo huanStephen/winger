@@ -40,19 +40,19 @@ public class XMLScriptBuilder extends BaseBuilder {
 		List<JsonNode> contents = new ArrayList<JsonNode>();
 		NodeList children = node.getNode().getChildNodes();
 		for (int i = 0; i < children.getLength(); i++) {
-		XNode child = node.newXNode(children.item(i));
-		String nodeName = child.getNode().getNodeName();
-		if (child.getNode().getNodeType() == Node.CDATA_SECTION_NODE
-			|| child.getNode().getNodeType() == Node.TEXT_NODE) {
-			String data = child.getStringBody("");
-			contents.add(new TextJsonNode(data));
-		} else if (child.getNode().getNodeType() == Node.ELEMENT_NODE && !"selectKey".equals(nodeName)) { // issue #628
-			NodeHandler handler = nodeHandlers.get(nodeName);
-			if (handler == null) {
-			throw new BuilderException("Unknown element <" + nodeName + "> in SQL statement.");
+			XNode child = node.newXNode(children.item(i));
+			String nodeName = child.getNode().getNodeName();
+			if (child.getNode().getNodeType() == Node.CDATA_SECTION_NODE
+				|| child.getNode().getNodeType() == Node.TEXT_NODE) {
+				String data = child.getStringBody("");
+				contents.add(new TextJsonNode(data));
+			} else if (child.getNode().getNodeType() == Node.ELEMENT_NODE && !"selectKey".equals(nodeName)) { // issue #628
+				NodeHandler handler = nodeHandlers.get(nodeName);
+				if (handler == null) {
+					throw new BuilderException("Unknown element <" + nodeName + "> in SQL statement.");
+				}
+				handler.handleNode(child, contents);
 			}
-			handler.handleNode(child, contents);
-		}
 		}
 		return contents;
 	}
@@ -79,23 +79,23 @@ public class XMLScriptBuilder extends BaseBuilder {
 
 	private class BindHandler implements NodeHandler {
 		public void handleNode(XNode nodeToHandle, List<JsonNode> targetContents) {
-		final String name = nodeToHandle.getStringAttribute("name");
-		final String expression = nodeToHandle.getStringAttribute("value");
-		final VarDeclJsonNode node = new VarDeclJsonNode(name, expression);
-		targetContents.add(node);
+			final String name = nodeToHandle.getStringAttribute("name");
+			final String expression = nodeToHandle.getStringAttribute("value");
+			final VarDeclJsonNode node = new VarDeclJsonNode(name, expression);
+			targetContents.add(node);
 		}
 	}
 
 	private class TrimHandler implements NodeHandler {
 		public void handleNode(XNode nodeToHandle, List<JsonNode> targetContents) {
-		List<JsonNode> contents = parseDynamicTags(nodeToHandle);
-		MixedJsonNode mixedSqlNode = new MixedJsonNode(contents);
-		String prefix = nodeToHandle.getStringAttribute("prefix");
-		String prefixOverrides = nodeToHandle.getStringAttribute("prefixOverrides");
-		String suffix = nodeToHandle.getStringAttribute("suffix");
-		String suffixOverrides = nodeToHandle.getStringAttribute("suffixOverrides");
-		TrimJsonNode trim = new TrimJsonNode(configuration, mixedSqlNode, prefix, prefixOverrides, suffix, suffixOverrides);
-		targetContents.add(trim);
+			List<JsonNode> contents = parseDynamicTags(nodeToHandle);
+			MixedJsonNode mixedSqlNode = new MixedJsonNode(contents);
+			String prefix = nodeToHandle.getStringAttribute("prefix");
+			String prefixOverrides = nodeToHandle.getStringAttribute("prefixOverrides");
+			String suffix = nodeToHandle.getStringAttribute("suffix");
+			String suffixOverrides = nodeToHandle.getStringAttribute("suffixOverrides");
+			TrimJsonNode trim = new TrimJsonNode(configuration, mixedSqlNode, prefix, prefixOverrides, suffix, suffixOverrides);
+			targetContents.add(trim);
 		}
 	}
 
