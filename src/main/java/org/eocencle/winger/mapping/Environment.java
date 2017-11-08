@@ -2,6 +2,8 @@ package org.eocencle.winger.mapping;
 
 import javax.sql.DataSource;
 
+import org.eocencle.winger.transaction.TransactionFactory;
+
 public final class Environment {
 	private final String id;
 	private final TransactionFactory transactionFactory;

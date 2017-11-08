@@ -10,8 +10,26 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import org.eocencle.winger.cache.Cache;
+import org.eocencle.winger.executor.ErrorContext;
+import org.eocencle.winger.executor.keygen.KeyGenerator;
+import org.eocencle.winger.mapping.Discriminator;
+import org.eocencle.winger.mapping.MappedStatement;
+import org.eocencle.winger.mapping.ParameterMap;
 import org.eocencle.winger.mapping.ParameterMapping;
+import org.eocencle.winger.mapping.ParameterMode;
+import org.eocencle.winger.mapping.ResultFlag;
+import org.eocencle.winger.mapping.ResultMap;
+import org.eocencle.winger.mapping.ResultMapping;
+import org.eocencle.winger.mapping.ResultSetType;
+import org.eocencle.winger.mapping.SqlCommandType;
+import org.eocencle.winger.mapping.SqlSource;
+import org.eocencle.winger.mapping.StatementType;
+import org.eocencle.winger.reflection.MetaClass;
+import org.eocencle.winger.scripting.LanguageDriver;
 import org.eocencle.winger.session.Configuration;
+import org.eocencle.winger.type.JdbcType;
+import org.eocencle.winger.type.TypeHandler;
 
 public class MapperBuilderAssistant extends BaseBuilder {
 	private String currentNamespace;

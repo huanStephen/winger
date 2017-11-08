@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!ELEMENT response (branch* )+>
+<!ELEMENT response (branch* | sql*)+>
 <!ATTLIST response
 contextpath CDATA #REQUIRED
+>
+
+<!ELEMENT json (#PCDATA | include | trim | where | set | foreach | choose | if | bind)*>
+<!ATTLIST json
+id CDATA #REQUIRED
 >
 
 <!ELEMENT branch (#PCDATA | include | trim | where | set | foreach | choose | if | bind)*>

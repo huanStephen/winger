@@ -12,15 +12,30 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.eocencle.winger.builder.BaseBuilder;
+import org.eocencle.winger.builder.CacheRefResolver;
+import org.eocencle.winger.builder.IncompleteElementException;
 import org.eocencle.winger.builder.MapperBuilderAssistant;
+import org.eocencle.winger.builder.ResultMapResolver;
+import org.eocencle.winger.cache.Cache;
+import org.eocencle.winger.executor.ErrorContext;
+import org.eocencle.winger.io.Resources;
+import org.eocencle.winger.mapping.Discriminator;
+import org.eocencle.winger.mapping.ParameterMapping;
+import org.eocencle.winger.mapping.ParameterMode;
+import org.eocencle.winger.mapping.ResultFlag;
+import org.eocencle.winger.mapping.ResultMap;
+import org.eocencle.winger.mapping.ResultMapping;
 import org.eocencle.winger.parsing.XNode;
 import org.eocencle.winger.parsing.XPathParser;
 import org.eocencle.winger.session.Configuration;
+import org.eocencle.winger.type.JdbcType;
+import org.eocencle.winger.type.TypeHandler;
 
 public class XMLResponseBuilder extends BaseBuilder {
 	private XPathParser parser;
 	private MapperBuilderAssistant builderAssistant;
 	private Map<String, XNode> sqlFragments;
+	private Map<String, XNode> jsonFragments;
 	private String resource;
 
 	@Deprecated
@@ -70,16 +85,12 @@ public class XMLResponseBuilder extends BaseBuilder {
 
 	private void configurationElement(XNode context) {
 		try {
-			String namespace = context.getStringAttribute("namespace");
-			builderAssistant.setCurrentNamespace(namespace);
-			cacheRefElement(context.evalNode("cache-ref"));
-			cacheElement(context.evalNode("cache"));
-			parameterMapElement(context.evalNodes("/mapper/parameterMap"));
-			resultMapElements(context.evalNodes("/mapper/resultMap"));
-			sqlElement(context.evalNodes("/mapper/sql"));
-			buildStatementFromContext(context.evalNodes("select|insert|update|delete"));
+			String namespace = context.getStringAttribute("contextpath");
+			this.builderAssistant.setCurrentNamespace(namespace);
+			this.jsonElement(context.evalNodes("json"));
+			this.buildBranchFormContext(context.evalNodes("branch"));
 		} catch (Exception e) {
-			throw new RuntimeException("Error parsing Mapper XML. Cause: " + e, e);
+			throw new RuntimeException("Error parsing Response XML. Cause: " + e, e);
 		}
 	}
 
@@ -93,11 +104,22 @@ public class XMLResponseBuilder extends BaseBuilder {
 	private void buildStatementFromContext(List<XNode> list, String requiredDatabaseId) {
 		for (XNode context : list) {
 			final XMLStatementBuilder statementParser = new XMLStatementBuilder(configuration, builderAssistant, context, requiredDatabaseId);
-		try {
-			statementParser.parseStatementNode();
-		} catch (IncompleteElementException e) {
-			configuration.addIncompleteStatement(statementParser);
+			try {
+				statementParser.parseStatementNode();
+			} catch (IncompleteElementException e) {
+				configuration.addIncompleteStatement(statementParser);
+			}
 		}
+	}
+	
+	private void buildBranchFormContext(List<XNode> list) {
+		for (XNode context : list) {
+			final XMLBranchBuilder branchParser = new XMLBranchBuilder(configuration, builderAssistant, context);
+			try {
+				branchParser.parseBranchNode();
+			} catch (IncompleteElementException e) {
+				this.configuration.addIncompleteBranch(branchParser);
+			}
 		}
 	}
 
@@ -240,7 +262,7 @@ public class XMLResponseBuilder extends BaseBuilder {
 		ResultMapResolver resultMapResolver = new ResultMapResolver(builderAssistant, id, typeClass, extend, discriminator, resultMappings, autoMapping);
 		try {
 			return resultMapResolver.resolve();
-		} catch (IncompleteElementExceptione) {
+		} catch (IncompleteElementException e) {
 			configuration.addIncompleteResultMap(resultMapResolver);
 			throw e;
 		}
@@ -289,6 +311,13 @@ public class XMLResponseBuilder extends BaseBuilder {
 			String id = context.getStringAttribute("id");
 			id = builderAssistant.applyCurrentNamespace(id, false);
 			if (databaseIdMatchesCurrent(id, databaseId, requiredDatabaseId)) sqlFragments.put(id, context);
+		}
+	}
+	
+	private void jsonElement(List<XNode> list) throws Exception {
+		for (XNode context : list) {
+			String id = context.getStringAttribute("id");
+			this.jsonFragments.put(id, context);
 		}
 	}
 	

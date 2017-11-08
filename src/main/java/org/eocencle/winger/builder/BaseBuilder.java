@@ -4,8 +4,12 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eocencle.winger.mapping.ParameterMode;
+import org.eocencle.winger.mapping.ResultSetType;
 import org.eocencle.winger.session.Configuration;
+import org.eocencle.winger.type.JdbcType;
 import org.eocencle.winger.type.TypeAliasRegistry;
+import org.eocencle.winger.type.TypeHandler;
 import org.eocencle.winger.type.TypeHandlerRegistry;
 
 public abstract class BaseBuilder {
@@ -39,27 +43,27 @@ public abstract class BaseBuilder {
 	protected JdbcType resolveJdbcType(String alias) {
 		if (alias == null) return null;
 		try {
-		return JdbcType.valueOf(alias);
+			return JdbcType.valueOf(alias);
 		} catch (IllegalArgumentException e) {
-		throw new BuilderException("Error resolving JdbcType. Cause: " + e, e);
+			throw new BuilderException("Error resolving JdbcType. Cause: " + e, e);
 		}
 	}
 
 	protected ResultSetType resolveResultSetType(String alias) {
 		if (alias == null) return null;
 		try {
-		return ResultSetType.valueOf(alias);
+			return ResultSetType.valueOf(alias);
 		} catch (IllegalArgumentException e) {
-		throw new BuilderException("Error resolving ResultSetType. Cause: " + e, e);
+			throw new BuilderException("Error resolving ResultSetType. Cause: " + e, e);
 		}
 	}
 
 	protected ParameterMode resolveParameterMode(String alias) {
 		if (alias == null) return null;
 		try {
-		return ParameterMode.valueOf(alias);
+			return ParameterMode.valueOf(alias);
 		} catch (IllegalArgumentException e) {
-		throw new BuilderException("Error resolving ParameterMode. Cause: " + e, e);
+			throw new BuilderException("Error resolving ParameterMode. Cause: " + e, e);
 		}
 	}
 
@@ -67,18 +71,18 @@ public abstract class BaseBuilder {
 		Class<?> clazz = resolveClass(alias);
 		if (clazz == null) return null;
 		try {
-		return resolveClass(alias).newInstance();
+			return resolveClass(alias).newInstance();
 		} catch (Exception e) {
-		throw new BuilderException("Error creating instance. Cause: " + e, e);
+			throw new BuilderException("Error creating instance. Cause: " + e, e);
 		}
 	}
 
 	protected Class<?> resolveClass(String alias) {
 		if (alias == null) return null;
 		try {
-		return resolveAlias(alias);
+			return resolveAlias(alias);
 		} catch (Exception e) {
-		throw new BuilderException("Error resolving class. Cause: " + e, e);
+			throw new BuilderException("Error resolving class. Cause: " + e, e);
 		}
 	}
 
@@ -86,7 +90,7 @@ public abstract class BaseBuilder {
 		if (typeHandlerAlias == null) return null;
 		Class<?> type = resolveClass(typeHandlerAlias);
 		if (type != null && !TypeHandler.class.isAssignableFrom(type)) {
-		throw new BuilderException("Type " + type.getName() + " is not a valid TypeHandler because it does not implement TypeHandler interface");
+			throw new BuilderException("Type " + type.getName() + " is not a valid TypeHandler because it does not implement TypeHandler interface");
 		}
 		@SuppressWarnings( "unchecked" ) // already verified it is a TypeHandler
 		Class<? extends TypeHandler<?>> typeHandlerType = (Class<? extends TypeHandler<?>>) type;
@@ -98,8 +102,8 @@ public abstract class BaseBuilder {
 		// javaType ignored for injected handlers see issue #746 for full detail
 		TypeHandler<?> handler = typeHandlerRegistry.getMappingTypeHandler(typeHandlerType);
 		if (handler == null) {
-		// not in registry, create a new one
-		handler = typeHandlerRegistry.getInstance(javaType, typeHandlerType);
+			// not in registry, create a new one
+			handler = typeHandlerRegistry.getInstance(javaType, typeHandlerType);
 		}
 		return handler;
 	}

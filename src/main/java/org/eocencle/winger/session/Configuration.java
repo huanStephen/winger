@@ -9,8 +9,26 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import org.eocencle.winger.builder.CacheRefResolver;
+import org.eocencle.winger.builder.ResultMapResolver;
+import org.eocencle.winger.builder.xml.XMLBranchBuilder;
+import org.eocencle.winger.builder.xml.XMLStatementBuilder;
+import org.eocencle.winger.cache.Cache;
+import org.eocencle.winger.executor.keygen.KeyGenerator;
+import org.eocencle.winger.executor.loader.ProxyFactory;
 import org.eocencle.winger.mapping.Environment;
+import org.eocencle.winger.mapping.MappedStatement;
+import org.eocencle.winger.mapping.ParameterMap;
+import org.eocencle.winger.mapping.ResultMap;
+import org.eocencle.winger.parsing.XNode;
+import org.eocencle.winger.plugin.Interceptor;
 import org.eocencle.winger.reflection.MetaObject;
+import org.eocencle.winger.reflection.factory.ObjectFactory;
+import org.eocencle.winger.reflection.wrapper.ObjectWrapperFactory;
+import org.eocencle.winger.scripting.LanguageDriver;
+import org.eocencle.winger.scripting.LanguageDriverRegistry;
+import org.eocencle.winger.scripting.xmltags.XMLLanguageDriver;
+import org.eocencle.winger.type.JdbcType;
 import org.eocencle.winger.type.TypeAliasRegistry;
 import org.eocencle.winger.type.TypeHandlerRegistry;
 
@@ -60,6 +78,7 @@ public class Configuration {
 	protected final Map<String, XNode> sqlFragments = new StrictMap<XNode>("XML fragments parsed from previous mappers");
 
 	protected final Collection<XMLStatementBuilder> incompleteStatements = new LinkedList<XMLStatementBuilder>();
+	protected final Collection<XMLBranchBuilder> incompleteBranchs = new LinkedList<XMLBranchBuilder>();
 	protected final Collection<CacheRefResolver> incompleteCacheRefs = new LinkedList<CacheRefResolver>();
 	protected final Collection<ResultMapResolver> incompleteResultMaps = new LinkedList<ResultMapResolver>();
 	protected final Collection<MethodResolver> incompleteMethods = new LinkedList<MethodResolver>();
@@ -492,6 +511,10 @@ public class Configuration {
 
 	public void addIncompleteStatement(XMLStatementBuilder incompleteStatement) {
 		incompleteStatements.add(incompleteStatement);
+	}
+	
+	public void addIncompleteBranch(XMLBranchBuilder incompleteBranch) {
+		incompleteBranchs.add(incompleteBranch);
 	}
 
 	public Collection<CacheRefResolver> getIncompleteCacheRefs() {

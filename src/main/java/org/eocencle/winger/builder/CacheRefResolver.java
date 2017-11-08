@@ -1,5 +1,7 @@
 package org.eocencle.winger.builder;
 
+import org.eocencle.winger.cache.Cache;
+
 public class CacheRefResolver {
 	private final MapperBuilderAssistant assistant;
 	private final String cacheRefNamespace;

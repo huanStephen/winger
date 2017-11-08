@@ -15,6 +15,7 @@ import org.eocencle.winger.builder.BaseBuilder;
 import org.eocencle.winger.builder.CacheRefResolver;
 import org.eocencle.winger.builder.IncompleteElementException;
 import org.eocencle.winger.builder.MapperBuilderAssistant;
+import org.eocencle.winger.builder.ResultMapResolver;
 import org.eocencle.winger.mapping.ParameterMapping;
 import org.eocencle.winger.parsing.XNode;
 import org.eocencle.winger.parsing.XPathParser;

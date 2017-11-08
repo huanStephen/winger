@@ -8,10 +8,24 @@ import javax.sql.DataSource;
 
 import org.eocencle.winger.builder.BaseBuilder;
 import org.eocencle.winger.builder.BuilderException;
+import org.eocencle.winger.datasource.DataSourceFactory;
+import org.eocencle.winger.executor.ErrorContext;
+import org.eocencle.winger.executor.loader.ProxyFactory;
+import org.eocencle.winger.io.Resources;
+import org.eocencle.winger.mapping.DatabaseIdProvider;
 import org.eocencle.winger.mapping.Environment;
 import org.eocencle.winger.parsing.XNode;
 import org.eocencle.winger.parsing.XPathParser;
+import org.eocencle.winger.plugin.Interceptor;
+import org.eocencle.winger.reflection.MetaClass;
+import org.eocencle.winger.reflection.factory.ObjectFactory;
+import org.eocencle.winger.reflection.wrapper.ObjectWrapperFactory;
+import org.eocencle.winger.session.AutoMappingBehavior;
 import org.eocencle.winger.session.Configuration;
+import org.eocencle.winger.session.ExecutorType;
+import org.eocencle.winger.session.LocalCacheScope;
+import org.eocencle.winger.transaction.TransactionFactory;
+import org.eocencle.winger.type.JdbcType;
 
 public class XMLConfigBuilder extends BaseBuilder {
 	private boolean parsed;
@@ -56,24 +70,15 @@ public class XMLConfigBuilder extends BaseBuilder {
 			throw new BuilderException("Each MapperConfigParser can only be used once.");
 		}
 		parsed = true;
-		parseConfiguration(parser.evalNode("/configuration"));
+		this.parseConfiguration(parser.evalNode("/configuration"));
 		return configuration;
 	}
 
 	private void parseConfiguration(XNode root) {
 		try {
-			propertiesElement(root.evalNode("properties")); //issue #117 read properties first
-			typeAliasesElement(root.evalNode("typeAliases"));
-			pluginElement(root.evalNode("plugins"));
-			objectFactoryElement(root.evalNode("objectFactory"));
-			objectWrapperFactoryElement(root.evalNode("objectWrapperFactory"));
-			settingsElement(root.evalNode("settings"));
-			environmentsElement(root.evalNode("environments")); // read it after objectFactory and objectWrapperFactory issue #631
-			databaseIdProviderElement(root.evalNode("databaseIdProvider"));
-			typeHandlerElement(root.evalNode("typeHandlers"));
-			mapperElement(root.evalNode("mappers"));
+			this.responseElement(root.evalNode("response"));
 		} catch (Exception e) {
-			throw new BuilderException("Error parsing SQL Mapper Configuration. Cause: " + e, e);
+			throw new BuilderException("Error parsing Response Configuration. Cause: " + e, e);
 		}
 	}
 
@@ -295,6 +300,22 @@ public class XMLConfigBuilder extends BaseBuilder {
 					} else {
 						throw new BuilderException("A mapper element may only specify a url, resource or class, but not more than one.");
 					}
+				}
+			}
+		}
+	}
+	
+	private void responseElement(XNode parent) throws Exception {
+		if (parent != null) {
+			for (XNode child : parent.getChildren()) {
+				String resource = child.getStringAttribute("resource");
+				if (resource != null) {
+					ErrorContext.instance().resource(resource);
+					InputStream inputStream = Resources.getResourceAsStream(resource);
+					XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, resource, configuration.getSqlFragments());
+					mapperParser.parse();
+				} else {
+					throw new BuilderException("A response element may only specify a resource.");
 				}
 			}
 		}

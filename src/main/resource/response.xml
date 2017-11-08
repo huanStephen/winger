@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE response PUBLIC "-//www.eocencle.org//DTD Config 1.0//EN" "http://www.eocencle.org/winger/dtd/winger-1-response.dtd">
 <response contextpath="/winger">
+	<json id="result">
+		{code : "1"}
+	</json>
 	<branch action="/item/addItem" method="post">
 		{
 			meta : {
