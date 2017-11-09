@@ -69,7 +69,7 @@ public class XMLResponseBuilder extends BaseBuilder {
 
 	public void parse() {
 		if (!configuration.isResourceLoaded(resource)) {
-			configurationElement(parser.evalNode("/mapper"));
+			this.configurationElement(parser.evalNode("/response"));
 			configuration.addLoadedResource(resource);
 			bindMapperForNamespace();
 		}

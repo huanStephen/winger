@@ -76,7 +76,7 @@ public class XMLConfigBuilder extends BaseBuilder {
 
 	private void parseConfiguration(XNode root) {
 		try {
-			this.responseElement(root.evalNode("response"));
+			this.responseElement(root.evalNode("responses"));
 		} catch (Exception e) {
 			throw new BuilderException("Error parsing Response Configuration. Cause: " + e, e);
 		}
@@ -312,7 +312,7 @@ public class XMLConfigBuilder extends BaseBuilder {
 				if (resource != null) {
 					ErrorContext.instance().resource(resource);
 					InputStream inputStream = Resources.getResourceAsStream(resource);
-					XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, resource, configuration.getSqlFragments());
+					XMLResponseBuilder mapperParser = new XMLResponseBuilder(inputStream, configuration, resource, configuration.getSqlFragments());
 					mapperParser.parse();
 				} else {
 					throw new BuilderException("A response element may only specify a resource.");

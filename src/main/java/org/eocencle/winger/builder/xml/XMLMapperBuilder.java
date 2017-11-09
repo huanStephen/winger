@@ -16,10 +16,20 @@ import org.eocencle.winger.builder.CacheRefResolver;
 import org.eocencle.winger.builder.IncompleteElementException;
 import org.eocencle.winger.builder.MapperBuilderAssistant;
 import org.eocencle.winger.builder.ResultMapResolver;
+import org.eocencle.winger.cache.Cache;
+import org.eocencle.winger.executor.ErrorContext;
+import org.eocencle.winger.io.Resources;
+import org.eocencle.winger.mapping.Discriminator;
 import org.eocencle.winger.mapping.ParameterMapping;
+import org.eocencle.winger.mapping.ParameterMode;
+import org.eocencle.winger.mapping.ResultFlag;
+import org.eocencle.winger.mapping.ResultMap;
+import org.eocencle.winger.mapping.ResultMapping;
 import org.eocencle.winger.parsing.XNode;
 import org.eocencle.winger.parsing.XPathParser;
 import org.eocencle.winger.session.Configuration;
+import org.eocencle.winger.type.JdbcType;
+import org.eocencle.winger.type.TypeHandler;
 
 public class XMLMapperBuilder extends BaseBuilder {
 	private XPathParser parser;
@@ -58,7 +68,7 @@ public class XMLMapperBuilder extends BaseBuilder {
 
 	public void parse() {
 		if (!configuration.isResourceLoaded(resource)) {
-			configurationElement(parser.evalNode("/mapper"));
+			this.configurationElement(parser.evalNode("/mapper"));
 			configuration.addLoadedResource(resource);
 			bindMapperForNamespace();
 		}

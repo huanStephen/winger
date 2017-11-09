@@ -98,63 +98,14 @@ public class XMLBranchBuilder extends BaseBuilder {
 	}
 	
 	public void parseBranchNode() {
-		String id = null, databaseId = null;
 		String action = this.context.getStringAttribute("action");
 		String method = this.context.getStringAttribute("method");
 
-		Integer fetchSize = context.getIntAttribute("fetchSize", null);
-		Integer timeout = context.getIntAttribute("timeout", null);
-		String parameterMap = context.getStringAttribute("parameterMap");
-		String parameterType = context.getStringAttribute("parameterType");
-		Class<?> parameterTypeClass = resolveClass(parameterType);
-		String resultMap = context.getStringAttribute("resultMap");
-		String resultType = context.getStringAttribute("resultType");
-		String lang = context.getStringAttribute("lang");
-		LanguageDriver langDriver = getLanguageDriver(lang);
-
-		Class<?> resultTypeClass = resolveClass(resultType);
-		String resultSetType = context.getStringAttribute("resultSetType");
-		StatementType statementType = StatementType.valueOf(context.getStringAttribute("statementType", StatementType.PREPARED.toString()));
-		ResultSetType resultSetTypeEnum = resolveResultSetType(resultSetType);
-
-		String nodeName = context.getNode().getNodeName();
-		SqlCommandType sqlCommandType = SqlCommandType.valueOf(nodeName.toUpperCase(Locale.ENGLISH));
-		boolean isSelect = sqlCommandType == SqlCommandType.SELECT;
-		boolean flushCache = context.getBooleanAttribute("flushCache", !isSelect);
-		boolean useCache = context.getBooleanAttribute("useCache", isSelect);
-		boolean resultOrdered = context.getBooleanAttribute("resultOrdered", false);
-
 		// Include Fragments before parsing
 		XMLIncludeTransformer includeParser = new XMLIncludeTransformer(configuration, builderAssistant);
-		includeParser.applyIncludes(context.getNode());
+		includeParser.applyIncludes(this.context.getNode());
 
-		// Parse selectKey after includes,
-		// in case if IncompleteElementException (issue #291)
-		List<XNode> selectKeyNodes = context.evalNodes("selectKey");
-		if (configuration.getDatabaseId() != null) {
-			parseSelectKeyNodes(id, selectKeyNodes, parameterTypeClass, langDriver, configuration.getDatabaseId());
-		}
-		parseSelectKeyNodes(id, selectKeyNodes, parameterTypeClass, langDriver, null);
-
-		// Parse the SQL (pre: <selectKey> and <include> were parsed and removed)
-		SqlSource sqlSource = langDriver.createSqlSource(configuration, context, parameterTypeClass);
-
-		String keyProperty = context.getStringAttribute("keyProperty");
-		String keyColumn = context.getStringAttribute("keyColumn");
-		KeyGenerator keyGenerator;
-		String keyStatementId = id + SelectKeyGenerator.SELECT_KEY_SUFFIX;
-		keyStatementId = builderAssistant.applyCurrentNamespace(keyStatementId, true);
-		if (configuration.hasKeyGenerator(keyStatementId)) {
-			keyGenerator = configuration.getKeyGenerator(keyStatementId);
-		} else {
-			keyGenerator = context.getBooleanAttribute("useGeneratedKeys", configuration.isUseGeneratedKeys() && SqlCommandType.INSERT.equals(sqlCommandType))
-				? new Jdbc3KeyGenerator() : new NoKeyGenerator();
-		}
-
-		builderAssistant.addMappedStatement(id, sqlSource, statementType, sqlCommandType,
-			fetchSize, timeout, parameterMap, parameterTypeClass, resultMap, resultTypeClass,
-			resultSetTypeEnum, flushCache, useCache, resultOrdered, 
-			keyGenerator, keyProperty, keyColumn, databaseId, langDriver);
+		
 	}
 	
 	public void parseSelectKeyNodes(String parentId, List<XNode> list, Class<?> parameterTypeClass, LanguageDriver langDriver, String skRequiredDatabaseId) {

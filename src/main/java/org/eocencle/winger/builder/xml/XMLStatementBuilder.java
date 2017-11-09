@@ -5,6 +5,15 @@ import java.util.Locale;
 
 import org.eocencle.winger.builder.BaseBuilder;
 import org.eocencle.winger.builder.MapperBuilderAssistant;
+import org.eocencle.winger.executor.keygen.Jdbc3KeyGenerator;
+import org.eocencle.winger.executor.keygen.KeyGenerator;
+import org.eocencle.winger.executor.keygen.NoKeyGenerator;
+import org.eocencle.winger.executor.keygen.SelectKeyGenerator;
+import org.eocencle.winger.mapping.MappedStatement;
+import org.eocencle.winger.mapping.ResultSetType;
+import org.eocencle.winger.mapping.SqlCommandType;
+import org.eocencle.winger.mapping.SqlSource;
+import org.eocencle.winger.mapping.StatementType;
 import org.eocencle.winger.parsing.XNode;
 import org.eocencle.winger.scripting.LanguageDriver;
 import org.eocencle.winger.session.Configuration;

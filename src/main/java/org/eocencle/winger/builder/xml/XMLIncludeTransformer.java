@@ -18,8 +18,8 @@ public class XMLIncludeTransformer {
 
 	public void applyIncludes(Node source) {
 		if (source.getNodeName().equals("include")) {
-			Node toInclude = findSqlFragment(getStringAttribute(source, "refid"));
-			applyIncludes(toInclude);
+			Node toInclude = this.findJsonFragment(this.getStringAttribute(source, "refid"));
+			this.applyIncludes(toInclude);
 			if (toInclude.getOwnerDocument() != source.getOwnerDocument()) {
 				toInclude = source.getOwnerDocument().importNode(toInclude, true);
 			}
@@ -44,6 +44,17 @@ public class XMLIncludeTransformer {
 			return result;
 		} catch (IllegalArgumentException e) {
 			throw new IncompleteElementException("Could not find SQL statement to include with refid '" + refid + "'", e);
+		}
+	}
+	
+	private Node findJsonFragment(String refid) {
+		refid = this.builderAssistant.applyCurrentNamespace(refid, true);
+		try {
+			XNode nodeToInclude = configuration.getSqlFragments().get(refid);
+			Node result = nodeToInclude.getNode().cloneNode(true);
+			return result;
+		} catch (IllegalArgumentException e) {
+			throw new IncompleteElementException("Could not find json to include with refid '" + refid + "'", e);
 		}
 	}
 
