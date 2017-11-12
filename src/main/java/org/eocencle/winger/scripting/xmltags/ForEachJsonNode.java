@@ -94,14 +94,14 @@ public class ForEachJsonNode implements JsonNode {
 
 	private void applyOpen(DynamicContext context) {
 		if (this.open != null) {
-			context.appendSql(this.open);
+			context.appendJson(this.open);
 		}
 
 	}
 
 	private void applyClose(DynamicContext context) {
 		if (this.close != null) {
-			context.appendSql(this.close);
+			context.appendJson(this.close);
 		}
 
 	}
@@ -134,17 +134,17 @@ public class ForEachJsonNode implements JsonNode {
 			this.delegate.bind(name, value);
 		}
 
-		public void appendSql(String sql) {
+		public void appendJson(String sql) {
 			if (!this.prefixApplied && sql != null && sql.trim().length() > 0) {
-				this.delegate.appendSql(this.prefix);
+				this.delegate.appendJson(this.prefix);
 				this.prefixApplied = true;
 			}
 
-			this.delegate.appendSql(sql);
+			this.delegate.appendJson(sql);
 		}
 
-		public String getSql() {
-			return this.delegate.getSql();
+		public String getJson() {
+			return this.delegate.getJson();
 		}
 
 		public int getUniqueNumber() {
@@ -175,11 +175,11 @@ public class ForEachJsonNode implements JsonNode {
 			this.delegate.bind(name, value);
 		}
 
-		public String getSql() {
-			return this.delegate.getSql();
+		public String getJson() {
+			return this.delegate.getJson();
 		}
 
-		public void appendSql(String sql) {
+		public void appendJson(String sql) {
 			GenericTokenParser parser = new GenericTokenParser("#{", "}", new TokenHandler() {
 				public String handleToken(String content) {
 					String newContent = content
@@ -195,7 +195,7 @@ public class ForEachJsonNode implements JsonNode {
 					return "#{" + newContent + "}";
 				}
 			});
-			this.delegate.appendSql(parser.parse(sql));
+			this.delegate.appendJson(parser.parse(sql));
 		}
 
 		public int getUniqueNumber() {

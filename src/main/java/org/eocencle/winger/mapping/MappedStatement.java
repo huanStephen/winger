@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eocencle.winger.cache.Cache;
+import org.eocencle.winger.executor.keygen.Jdbc3KeyGenerator;
 import org.eocencle.winger.executor.keygen.KeyGenerator;
 import org.eocencle.winger.scripting.LanguageDriver;
 import org.eocencle.winger.session.Configuration;

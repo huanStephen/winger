@@ -4,11 +4,12 @@ import java.util.List;
 import java.util.Locale;
 
 import org.eocencle.winger.builder.BaseBuilder;
-import org.eocencle.winger.builder.MapperBuilderAssistant;
+import org.eocencle.winger.builder.ResponseBuilderAssistant;
 import org.eocencle.winger.executor.keygen.Jdbc3KeyGenerator;
 import org.eocencle.winger.executor.keygen.KeyGenerator;
 import org.eocencle.winger.executor.keygen.NoKeyGenerator;
 import org.eocencle.winger.executor.keygen.SelectKeyGenerator;
+import org.eocencle.winger.mapping.JsonSource;
 import org.eocencle.winger.mapping.MappedStatement;
 import org.eocencle.winger.mapping.ResultSetType;
 import org.eocencle.winger.mapping.SqlCommandType;
@@ -18,16 +19,18 @@ import org.eocencle.winger.parsing.XNode;
 import org.eocencle.winger.scripting.LanguageDriver;
 import org.eocencle.winger.session.Configuration;
 
+import com.sun.javafx.collections.MappingChange.Map;
+
 public class XMLBranchBuilder extends BaseBuilder {
-	private MapperBuilderAssistant builderAssistant;
+	private ResponseBuilderAssistant builderAssistant;
 	private XNode context;
 	private String requiredDatabaseId;
 
-	public XMLBranchBuilder(Configuration configuration, MapperBuilderAssistant builderAssistant, XNode context) {
+	public XMLBranchBuilder(Configuration configuration, ResponseBuilderAssistant builderAssistant, XNode context) {
 		this(configuration, builderAssistant, context, null);
 	}
 
-	public XMLBranchBuilder(Configuration configuration, MapperBuilderAssistant builderAssistant, XNode context, String databaseId) {
+	public XMLBranchBuilder(Configuration configuration, ResponseBuilderAssistant builderAssistant, XNode context, String databaseId) {
 		super(configuration);
 		this.builderAssistant = builderAssistant;
 		this.context = context;
@@ -65,7 +68,7 @@ public class XMLBranchBuilder extends BaseBuilder {
 		boolean resultOrdered = context.getBooleanAttribute("resultOrdered", false);
 
 		// Include Fragments before parsing
-		XMLIncludeTransformer includeParser = new XMLIncludeTransformer(configuration, builderAssistant);
+		XMLIncludeTransformer includeParser = null; //new XMLIncludeTransformer(configuration, builderAssistant);
 		includeParser.applyIncludes(context.getNode());
 
 		// Parse selectKey after includes,
@@ -77,13 +80,13 @@ public class XMLBranchBuilder extends BaseBuilder {
 		parseSelectKeyNodes(id, selectKeyNodes, parameterTypeClass, langDriver, null);
 
 		// Parse the SQL (pre: <selectKey> and <include> were parsed and removed)
-		SqlSource sqlSource = langDriver.createSqlSource(configuration, context, parameterTypeClass);
+		SqlSource sqlSource = null; //langDriver.createSqlSource(configuration, context, parameterTypeClass);
 
 		String keyProperty = context.getStringAttribute("keyProperty");
 		String keyColumn = context.getStringAttribute("keyColumn");
 		KeyGenerator keyGenerator;
 		String keyStatementId = id + SelectKeyGenerator.SELECT_KEY_SUFFIX;
-		keyStatementId = builderAssistant.applyCurrentNamespace(keyStatementId, true);
+		keyStatementId = builderAssistant.applyCurrentContextPath(keyStatementId, true);
 		if (configuration.hasKeyGenerator(keyStatementId)) {
 			keyGenerator = configuration.getKeyGenerator(keyStatementId);
 		} else {
@@ -102,10 +105,14 @@ public class XMLBranchBuilder extends BaseBuilder {
 		String method = this.context.getStringAttribute("method");
 
 		// Include Fragments before parsing
-		XMLIncludeTransformer includeParser = new XMLIncludeTransformer(configuration, builderAssistant);
+		XMLIncludeTransformer includeParser = new XMLIncludeTransformer(this.configuration, this.builderAssistant);
 		includeParser.applyIncludes(this.context.getNode());
 
+		LanguageDriver langDriver = getLanguageDriver(null);
+		JsonSource jsonSource = langDriver.createJsonSource(this.configuration, this.context, null);
 		
+		this.builderAssistant.addResponseBranch(action, method, jsonSource, null, null, null, null, null, Map.class, null, null, null, false, false, 
+			false, null, null, null, null, langDriver);
 	}
 	
 	public void parseSelectKeyNodes(String parentId, List<XNode> list, Class<?> parameterTypeClass, LanguageDriver langDriver, String skRequiredDatabaseId) {
@@ -136,7 +143,7 @@ public class XMLBranchBuilder extends BaseBuilder {
 		String resultMap = null;
 		ResultSetType resultSetTypeEnum = null;
 
-		SqlSource sqlSource = langDriver.createSqlSource(configuration, nodeToHandle, parameterTypeClass);
+		SqlSource sqlSource = null; //langDriver.createSqlSource(configuration, nodeToHandle, parameterTypeClass);
 		SqlCommandType sqlCommandType = SqlCommandType.SELECT;
 
 		builderAssistant.addMappedStatement(id, sqlSource, statementType, sqlCommandType,
@@ -144,7 +151,7 @@ public class XMLBranchBuilder extends BaseBuilder {
 			resultSetTypeEnum, flushCache, useCache, resultOrdered,
 			keyGenerator, keyProperty, null, databaseId, langDriver);
 
-		id = builderAssistant.applyCurrentNamespace(id, false);
+		id = builderAssistant.applyCurrentContextPath(id, false);
 
 		MappedStatement keyStatement = configuration.getMappedStatement(id, false);
 		configuration.addKeyGenerator(id, new SelectKeyGenerator(keyStatement, executeBefore));
@@ -161,7 +168,7 @@ public class XMLBranchBuilder extends BaseBuilder {
 				return false;
 			}
 			// skip this statement if there is a previous one with a not null databaseId
-			id = builderAssistant.applyCurrentNamespace(id, false);
+			id = builderAssistant.applyCurrentContextPath(id, false);
 			if (this.configuration.hasStatement(id, false)) {
 				MappedStatement previous = this.configuration.getMappedStatement(id, false); // issue #2
 				if (previous.getDatabaseId() != null) {

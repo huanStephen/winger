@@ -17,35 +17,34 @@ public class DynamicContext {
 	}
 
 	private final ContextMap bindings;
-	private final StringBuilder sqlBuilder = new StringBuilder();
+	private final StringBuilder jsonBuilder = new StringBuilder();
 	private int uniqueNumber = 0;
 
 	public DynamicContext(Configuration configuration, Object parameterObject) {
 		if (parameterObject != null && !(parameterObject instanceof Map)) {
-		MetaObject metaObject = configuration.newMetaObject(parameterObject);
-		bindings = new ContextMap(metaObject);
+			MetaObject metaObject = configuration.newMetaObject(parameterObject);
+			this.bindings = new ContextMap(metaObject);
 		} else {
-		bindings = new ContextMap(null);
+			this.bindings = new ContextMap(null);
 		}
 		bindings.put(PARAMETER_OBJECT_KEY, parameterObject);
 		bindings.put(DATABASE_ID_KEY, configuration.getDatabaseId());
 	}
 
 	public Map<String, Object> getBindings() {
-		return bindings;
+		return this.bindings;
 	}
 
 	public void bind(String name, Object value) {
-		bindings.put(name, value);
+		this.bindings.put(name, value);
 	}
 
-	public void appendSql(String sql) {
-		sqlBuilder.append(sql);
-		sqlBuilder.append(" ");
+	public void appendJson(String json) {
+		this.jsonBuilder.append(json);
 	}
 
-	public String getSql() {
-		return sqlBuilder.toString().trim();
+	public String getJson() {
+		return this.jsonBuilder.toString().trim();
 	}
 
 	public int getUniqueNumber() {
@@ -82,21 +81,20 @@ public class DynamicContext {
 
 	static class ContextAccessor implements PropertyAccessor {
 
-		public Object getProperty(Map context, Object target, Object name)
-			throws OgnlException {
-		Map map = (Map) target;
-
-		Object result = map.get(name);
-		if (result != null) {
-			return result;
-		}
-
-		Object parameterObject = map.get(PARAMETER_OBJECT_KEY);
-		if (parameterObject instanceof Map) {
-			return ((Map)parameterObject).get(name);
-		}
-
-		return null;
+		public Object getProperty(Map context, Object target, Object name) throws OgnlException {
+			Map map = (Map) target;
+	
+			Object result = map.get(name);
+			if (result != null) {
+				return result;
+			}
+	
+			Object parameterObject = map.get(PARAMETER_OBJECT_KEY);
+			if (parameterObject instanceof Map) {
+				return ((Map)parameterObject).get(name);
+			}
+	
+			return null;
 		}
 
 		public void setProperty(Map context, Object target, Object name, Object value)

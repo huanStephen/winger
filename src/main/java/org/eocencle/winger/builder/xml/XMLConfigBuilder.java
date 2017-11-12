@@ -58,7 +58,7 @@ public class XMLConfigBuilder extends BaseBuilder {
 
 	private XMLConfigBuilder(XPathParser parser, String environment, Properties props) {
 		super(new Configuration());
-		ErrorContext.instance().resource("SQL Mapper Configuration");
+		ErrorContext.instance().resource("Response Configuration");
 		this.configuration.setVariables(props);
 		this.parsed = false;
 		this.environment = environment;
@@ -67,7 +67,7 @@ public class XMLConfigBuilder extends BaseBuilder {
 
 	public Configuration parse() {
 		if (parsed) {
-			throw new BuilderException("Each MapperConfigParser can only be used once.");
+			throw new BuilderException("Each ResponseConfigParser can only be used once.");
 		}
 		parsed = true;
 		this.parseConfiguration(parser.evalNode("/configuration"));
@@ -312,8 +312,8 @@ public class XMLConfigBuilder extends BaseBuilder {
 				if (resource != null) {
 					ErrorContext.instance().resource(resource);
 					InputStream inputStream = Resources.getResourceAsStream(resource);
-					XMLResponseBuilder mapperParser = new XMLResponseBuilder(inputStream, configuration, resource, configuration.getSqlFragments());
-					mapperParser.parse();
+					XMLResponseBuilder responseParser = new XMLResponseBuilder(inputStream, configuration, resource, configuration.getJsonFragments());
+					responseParser.parse();
 				} else {
 					throw new BuilderException("A response element may only specify a resource.");
 				}

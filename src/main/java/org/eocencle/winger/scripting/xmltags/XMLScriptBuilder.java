@@ -8,7 +8,7 @@ import java.util.Map;
 import org.eocencle.winger.builder.BaseBuilder;
 import org.eocencle.winger.builder.BuilderException;
 import org.eocencle.winger.builder.xml.XMLMapperEntityResolver;
-import org.eocencle.winger.mapping.SqlSource;
+import org.eocencle.winger.mapping.JsonSource;
 import org.eocencle.winger.parsing.XNode;
 import org.eocencle.winger.parsing.XPathParser;
 import org.eocencle.winger.session.Configuration;
@@ -29,11 +29,11 @@ public class XMLScriptBuilder extends BaseBuilder {
 		this.context = parser.evalNode("/script");
 	}
 
-	public SqlSource parseScriptNode() {
+	public JsonSource parseScriptNode() {
 		List<JsonNode> contents = parseDynamicTags(context);
-		MixedJsonNode rootSqlNode = new MixedJsonNode(contents);
-		SqlSource sqlSource = new DynamicSqlSource(configuration, rootSqlNode);
-		return sqlSource;
+		MixedJsonNode rootJsonNode = new MixedJsonNode(contents);
+		JsonSource jsonSource = new DynamicJsonSource(configuration, rootJsonNode);
+		return jsonSource;
 	}
 
 	private List<JsonNode> parseDynamicTags(XNode node) {
@@ -46,10 +46,10 @@ public class XMLScriptBuilder extends BaseBuilder {
 				|| child.getNode().getNodeType() == Node.TEXT_NODE) {
 				String data = child.getStringBody("");
 				contents.add(new TextJsonNode(data));
-			} else if (child.getNode().getNodeType() == Node.ELEMENT_NODE && !"selectKey".equals(nodeName)) { // issue #628
-				NodeHandler handler = nodeHandlers.get(nodeName);
+			} else if (child.getNode().getNodeType() == Node.ELEMENT_NODE && !"selectKey".equals(nodeName)) {
+				NodeHandler handler = this.nodeHandlers.get(nodeName);
 				if (handler == null) {
-					throw new BuilderException("Unknown element <" + nodeName + "> in SQL statement.");
+					throw new BuilderException("Unknown element <" + nodeName + "> in Json.");
 				}
 				handler.handleNode(child, contents);
 			}
@@ -102,8 +102,8 @@ public class XMLScriptBuilder extends BaseBuilder {
 	private class WhereHandler implements NodeHandler {
 		public void handleNode(XNode nodeToHandle, List<JsonNode> targetContents) {
 			List<JsonNode> contents = parseDynamicTags(nodeToHandle);
-			MixedJsonNode mixedSqlNode = new MixedJsonNode(contents);
-			WhereJsonNode where = new WhereJsonNode(configuration, mixedSqlNode);
+			MixedJsonNode mixedJsonNode = new MixedJsonNode(contents);
+			WhereJsonNode where = new WhereJsonNode(configuration, mixedJsonNode);
 			targetContents.add(where);
 		}
 	}
@@ -111,8 +111,8 @@ public class XMLScriptBuilder extends BaseBuilder {
 	private class SetHandler implements NodeHandler {
 		public void handleNode(XNode nodeToHandle, List<JsonNode> targetContents) {
 			List<JsonNode> contents = parseDynamicTags(nodeToHandle);
-			MixedJsonNode mixedSqlNode = new MixedJsonNode(contents);
-			SetJsonNode set = new SetJsonNode(configuration, mixedSqlNode);
+			MixedJsonNode mixedJsonNode = new MixedJsonNode(contents);
+			SetJsonNode set = new SetJsonNode(configuration, mixedJsonNode);
 			targetContents.add(set);
 		}
 	}
@@ -120,55 +120,55 @@ public class XMLScriptBuilder extends BaseBuilder {
 	private class ForEachHandler implements NodeHandler {
 		public void handleNode(XNode nodeToHandle, List<JsonNode> targetContents) {
 			List<JsonNode> contents = parseDynamicTags(nodeToHandle);
-			MixedJsonNode mixedSqlNode = new MixedJsonNode(contents);
+			MixedJsonNode mixedJsonNode = new MixedJsonNode(contents);
 			String collection = nodeToHandle.getStringAttribute("collection");
 			String item = nodeToHandle.getStringAttribute("item");
 			String index = nodeToHandle.getStringAttribute("index");
 			String open = nodeToHandle.getStringAttribute("open");
 			String close = nodeToHandle.getStringAttribute("close");
 			String separator = nodeToHandle.getStringAttribute("separator");
-			ForEachJsonNode forEachSqlNode = new ForEachJsonNode(configuration, mixedSqlNode, collection, index, item, open, close, separator);
-			targetContents.add(forEachSqlNode);
+			ForEachJsonNode forEachJsonNode = new ForEachJsonNode(configuration, mixedJsonNode, collection, index, item, open, close, separator);
+			targetContents.add(forEachJsonNode);
 		}
 	}
 
 	private class IfHandler implements NodeHandler {
 		public void handleNode(XNode nodeToHandle, List<JsonNode> targetContents) {
 			List<JsonNode> contents = parseDynamicTags(nodeToHandle);
-			MixedJsonNode mixedSqlNode = new MixedJsonNode(contents);
+			MixedJsonNode mixedJsonNode = new MixedJsonNode(contents);
 			String test = nodeToHandle.getStringAttribute("test");
-			IfJsonNode ifSqlNode = new IfJsonNode(mixedSqlNode, test);
-			targetContents.add(ifSqlNode);
+			IfJsonNode ifJsonNode = new IfJsonNode(mixedJsonNode, test);
+			targetContents.add(ifJsonNode);
 		}
 	}
 
 	private class OtherwiseHandler implements NodeHandler {
 		public void handleNode(XNode nodeToHandle, List<JsonNode> targetContents) {
 			List<JsonNode> contents = parseDynamicTags(nodeToHandle);
-			MixedJsonNode mixedSqlNode = new MixedJsonNode(contents);
-			targetContents.add(mixedSqlNode);
+			MixedJsonNode mixedJsonNode = new MixedJsonNode(contents);
+			targetContents.add(mixedJsonNode);
 		}
 	}
 
 	private class ChooseHandler implements NodeHandler {
 		public void handleNode(XNode nodeToHandle, List<JsonNode> targetContents) {
-			List<JsonNode> whenSqlNodes = new ArrayList<JsonNode>();
-			List<JsonNode> otherwiseSqlNodes = new ArrayList<JsonNode>();
-			handleWhenOtherwiseNodes(nodeToHandle, whenSqlNodes, otherwiseSqlNodes);
-			JsonNode defaultSqlNode = getDefaultSqlNode(otherwiseSqlNodes);
-			ChooseJsonNode chooseSqlNode = new ChooseJsonNode(whenSqlNodes, defaultSqlNode);
-			targetContents.add(chooseSqlNode);
+			List<JsonNode> whenJsonNodes = new ArrayList<JsonNode>();
+			List<JsonNode> otherwiseJsonNodes = new ArrayList<JsonNode>();
+			handleWhenOtherwiseNodes(nodeToHandle, whenJsonNodes, otherwiseJsonNodes);
+			JsonNode defaultJsonNode = getDefaultSqlNode(otherwiseJsonNodes);
+			ChooseJsonNode chooseJsonNode = new ChooseJsonNode(whenJsonNodes, defaultJsonNode);
+			targetContents.add(chooseJsonNode);
 		}
 
-		private void handleWhenOtherwiseNodes(XNode chooseSqlNode, List<JsonNode> ifSqlNodes, List<JsonNode> defaultSqlNodes) {
+		private void handleWhenOtherwiseNodes(XNode chooseSqlNode, List<JsonNode> ifJsonNodes, List<JsonNode> defaultJsonNodes) {
 			List<XNode> children = chooseSqlNode.getChildren();
 			for (XNode child : children) {
 				String nodeName = child.getNode().getNodeName();
 				NodeHandler handler = nodeHandlers.get(nodeName);
 				if (handler instanceof IfHandler) {
-					handler.handleNode(child, ifSqlNodes);
+					handler.handleNode(child, ifJsonNodes);
 				} else if (handler instanceof OtherwiseHandler) {
-					handler.handleNode(child, defaultSqlNodes);
+					handler.handleNode(child, defaultJsonNodes);
 				}
 			}
 		}

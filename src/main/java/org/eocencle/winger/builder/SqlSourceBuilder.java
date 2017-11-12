@@ -4,11 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.eocencle.winger.mapping.SqlSource;
+import org.eocencle.winger.mapping.JsonSource;
+import org.eocencle.winger.mapping.ParameterMapping;
 import org.eocencle.winger.parsing.GenericTokenParser;
 import org.eocencle.winger.parsing.TokenHandler;
+import org.eocencle.winger.reflection.MetaClass;
 import org.eocencle.winger.reflection.MetaObject;
 import org.eocencle.winger.session.Configuration;
+import org.eocencle.winger.type.JdbcType;
 
 public class SqlSourceBuilder extends BaseBuilder {
 	private static final String parameterProperties = "javaType,jdbcType,mode,numericScale,resultMap,typeHandler,jdbcTypeName";
@@ -17,11 +20,11 @@ public class SqlSourceBuilder extends BaseBuilder {
 		super(configuration);
 	}
 
-	public SqlSource parse(String originalSql, Class<?> parameterType, Map<String, Object> additionalParameters) {
+	public JsonSource parse(String originalSql, Class<?> parameterType, Map<String, Object> additionalParameters) {
 		ParameterMappingTokenHandler handler = new ParameterMappingTokenHandler(configuration, parameterType, additionalParameters);
 		GenericTokenParser parser = new GenericTokenParser("#{", "}", handler);
-		String sql = parser.parse(originalSql);
-		return new StaticSqlSource(configuration, sql, handler.getParameterMappings());
+		String json = parser.parse(originalSql);
+		return new StaticJsonSource(configuration, json, handler.getParameterMappings());
 	}
 
 	private static class ParameterMappingTokenHandler extends BaseBuilder implements TokenHandler {

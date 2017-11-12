@@ -13,7 +13,7 @@ public class TextJsonNode implements JsonNode {
 
 	public boolean apply(DynamicContext context) {
 		GenericTokenParser parser = new GenericTokenParser("${", "}", new BindingTokenParser(context));
-		context.appendSql(parser.parse(text));
+		context.appendJson(parser.parse(text));
 		return true;
 	}
 

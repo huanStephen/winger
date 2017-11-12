@@ -11,7 +11,7 @@ public class MixedJsonNode implements JsonNode {
 
 	public boolean apply(DynamicContext context) {
 		for (JsonNode sqlNode : contents) {
-		sqlNode.apply(context);
+			sqlNode.apply(context);
 		}
 		return true;
 	}

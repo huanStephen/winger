@@ -7,7 +7,7 @@ import org.eocencle.winger.mapping.ResultMap;
 import org.eocencle.winger.mapping.ResultMapping;
 
 public class ResultMapResolver {
-	private final MapperBuilderAssistant assistant;
+	private final ResponseBuilderAssistant assistant;
 	private String id;
 	private Class<?> type;
 	private String extend;
@@ -15,7 +15,7 @@ public class ResultMapResolver {
 	private List<ResultMapping> resultMappings;
 	private Boolean autoMapping;
 
-	public ResultMapResolver(MapperBuilderAssistant assistant, String id, Class<?> type, String extend, Discriminator discriminator, List<ResultMapping> resultMappings, Boolean autoMapping) {
+	public ResultMapResolver(ResponseBuilderAssistant assistant, String id, Class<?> type, String extend, Discriminator discriminator, List<ResultMapping> resultMappings, Boolean autoMapping) {
 		this.assistant = assistant;
 		this.id = id;
 		this.type = type;

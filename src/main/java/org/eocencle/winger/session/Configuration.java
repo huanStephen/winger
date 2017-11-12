@@ -9,25 +9,43 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import org.eocencle.winger.binding.MapperRegistry;
+import org.eocencle.winger.binding.ResponseRegistry;
 import org.eocencle.winger.builder.CacheRefResolver;
+import org.eocencle.winger.builder.MethodResolver;
 import org.eocencle.winger.builder.ResultMapResolver;
 import org.eocencle.winger.builder.xml.XMLBranchBuilder;
 import org.eocencle.winger.builder.xml.XMLStatementBuilder;
 import org.eocencle.winger.cache.Cache;
 import org.eocencle.winger.executor.keygen.KeyGenerator;
+import org.eocencle.winger.executor.loader.CglibProxyFactory;
 import org.eocencle.winger.executor.loader.ProxyFactory;
+import org.eocencle.winger.executor.parameter.ParameterHandler;
+import org.eocencle.winger.executor.resultset.FastResultSetHandler;
+import org.eocencle.winger.executor.resultset.ResultSetHandler;
+import org.eocencle.winger.io.ResolverUtil;
+import org.eocencle.winger.javassist.bytecode.analysis.Executor;
+import org.eocencle.winger.logging.Log;
+import org.eocencle.winger.logging.LogFactory;
+import org.eocencle.winger.mapping.BoundSql;
 import org.eocencle.winger.mapping.Environment;
 import org.eocencle.winger.mapping.MappedStatement;
 import org.eocencle.winger.mapping.ParameterMap;
+import org.eocencle.winger.mapping.ResponseBranch;
 import org.eocencle.winger.mapping.ResultMap;
 import org.eocencle.winger.parsing.XNode;
 import org.eocencle.winger.plugin.Interceptor;
+import org.eocencle.winger.plugin.InterceptorChain;
 import org.eocencle.winger.reflection.MetaObject;
+import org.eocencle.winger.reflection.factory.DefaultObjectFactory;
 import org.eocencle.winger.reflection.factory.ObjectFactory;
+import org.eocencle.winger.reflection.wrapper.DefaultObjectWrapperFactory;
 import org.eocencle.winger.reflection.wrapper.ObjectWrapperFactory;
 import org.eocencle.winger.scripting.LanguageDriver;
 import org.eocencle.winger.scripting.LanguageDriverRegistry;
+import org.eocencle.winger.scripting.defaults.RawLanguageDriver;
 import org.eocencle.winger.scripting.xmltags.XMLLanguageDriver;
+import org.eocencle.winger.transaction.Transaction;
 import org.eocencle.winger.type.JdbcType;
 import org.eocencle.winger.type.TypeAliasRegistry;
 import org.eocencle.winger.type.TypeHandlerRegistry;
@@ -57,6 +75,7 @@ public class Configuration {
 	protected ObjectFactory objectFactory = new DefaultObjectFactory();
 	protected ObjectWrapperFactory objectWrapperFactory = new DefaultObjectWrapperFactory();
 	protected MapperRegistry mapperRegistry = new MapperRegistry(this);
+	protected ResponseRegistry responseRegistry = new ResponseRegistry(this);
 	
 	protected boolean lazyLoadingEnabled = false;
 	protected ProxyFactory proxyFactory;
@@ -69,6 +88,7 @@ public class Configuration {
 	protected final LanguageDriverRegistry languageRegistry = new LanguageDriverRegistry();
 	
 	protected final Map<String, MappedStatement> mappedStatements = new StrictMap<MappedStatement>("Mapped Statements collection");
+	protected final Map<String, ResponseBranch> responseBranchs = new StrictMap<ResponseBranch>("Response Branchs collection");
 	protected final Map<String, Cache> caches = new StrictMap<Cache>("Caches collection");
 	protected final Map<String, ResultMap> resultMaps = new StrictMap<ResultMap>("Result Maps collection");
 	protected final Map<String, ParameterMap> parameterMaps = new StrictMap<ParameterMap>("Parameter Maps collection");
@@ -76,6 +96,7 @@ public class Configuration {
 
 	protected final Set<String> loadedResources = new HashSet<String>();
 	protected final Map<String, XNode> sqlFragments = new StrictMap<XNode>("XML fragments parsed from previous mappers");
+	protected final Map<String, XNode> jsonFragments = new StrictMap<XNode>("XML fragments parsed from previous responses");
 
 	protected final Collection<XMLStatementBuilder> incompleteStatements = new LinkedList<XMLStatementBuilder>();
 	protected final Collection<XMLBranchBuilder> incompleteBranchs = new LinkedList<XMLBranchBuilder>();
@@ -96,8 +117,7 @@ public class Configuration {
 	}
 
 	public Configuration() {
-		typeAliasRegistry.registerAlias("JDBC", JdbcTransactionFactory.class);
-		typeAliasRegistry.registerAlias("MANAGED", ManagedTransactionFactory.class);
+		/*typeAliasRegistry.registerAlias("MANAGED", ManagedTransactionFactory.class);
 		typeAliasRegistry.registerAlias("JNDI", JndiDataSourceFactory.class);
 		typeAliasRegistry.registerAlias("POOLED", PooledDataSourceFactory.class);
 		typeAliasRegistry.registerAlias("UNPOOLED", UnpooledDataSourceFactory.class);
@@ -121,10 +141,10 @@ public class Configuration {
 		typeAliasRegistry.registerAlias("NO_LOGGING", NoLoggingImpl.class);
 		
 		typeAliasRegistry.registerAlias("CGLIB", CglibProxyFactory.class);
-		typeAliasRegistry.registerAlias("JAVASSIST", JavassistProxyFactory.class);
+		typeAliasRegistry.registerAlias("JAVASSIST", JavassistProxyFactory.class);*/
 		
-		languageRegistry.setDefaultDriverClass(XMLLanguageDriver.class);
-		languageRegistry.register(RawLanguageDriver.class);
+		this.languageRegistry.setDefaultDriverClass(XMLLanguageDriver.class);
+		this.languageRegistry.register(RawLanguageDriver.class);
 	}
 
 	public String getLogPrefix() {
@@ -219,7 +239,7 @@ public class Configuration {
 
 	public void setLazyLoadingEnabled(boolean lazyLoadingEnabled) {
 		if (lazyLoadingEnabled && this.proxyFactory == null) {
-		this.proxyFactory = new CglibProxyFactory();
+			this.proxyFactory = new CglibProxyFactory();
 		}
 		this.lazyLoadingEnabled = lazyLoadingEnabled;
 	}
@@ -350,7 +370,7 @@ public class Configuration {
 
 	public void setDefaultScriptingLanguage(Class<?> driver) {
 		if (driver == null) {
-		driver = XMLLanguageDriver.class;
+			driver = XMLLanguageDriver.class;
 		}
 		getLanguageRegistry().setDefaultDriverClass(driver);
 	}
@@ -494,6 +514,10 @@ public class Configuration {
 	public void addMappedStatement(MappedStatement ms) {
 		mappedStatements.put(ms.getId(), ms);
 	}
+	
+	public void addResponseBranch(ResponseBranch rb) {
+		this.responseBranchs.put(rb.getAction(), rb);
+	}
 
 	public Collection<String> getMappedStatementNames() {
 		buildAllStatements();
@@ -554,6 +578,10 @@ public class Configuration {
 
 	public Map<String, XNode> getSqlFragments() {
 		return sqlFragments;
+	}
+	
+	public Map<String, XNode> getJsonFragments() {
+		return this.jsonFragments;
 	}
 
 	public void addInterceptor(Interceptor interceptor) {

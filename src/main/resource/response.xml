@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE response PUBLIC "-//www.eocencle.org//DTD Config 1.0//EN" "http://www.eocencle.org/winger/dtd/winger-1-response.dtd">
-<response contextpath="/winger">
+<response contextpath="winger/">
 	<json id="result">
-		{code : "1"}
+		"say" : "hello wolrd"
 	</json>
 	<branch action="/item/addItem" method="post">
 		{
-			meta : {
-				code : 1,
-				msg : '请求成功！'
+			"meta" : {
+				"code" : 1,
+				"msg" : "请求成功！"
 			},
-			data : {}
+			"data" : {
+				<include refid="result" />
+			}
 		}
 	</branch>
 </response>

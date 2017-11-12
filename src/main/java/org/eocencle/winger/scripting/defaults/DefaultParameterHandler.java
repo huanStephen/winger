@@ -4,25 +4,33 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.eocencle.winger.mapping.BoundSql;
+import org.eocencle.winger.executor.ErrorContext;
+import org.eocencle.winger.executor.ExecutorException;
+import org.eocencle.winger.executor.parameter.ParameterHandler;
+import org.eocencle.winger.mapping.BoundJson;
+import org.eocencle.winger.mapping.MappedStatement;
 import org.eocencle.winger.mapping.ParameterMapping;
+import org.eocencle.winger.mapping.ParameterMode;
 import org.eocencle.winger.reflection.MetaObject;
 import org.eocencle.winger.session.Configuration;
+import org.eocencle.winger.type.JdbcType;
+import org.eocencle.winger.type.TypeHandler;
+import org.eocencle.winger.type.TypeHandlerRegistry;
 
 public class DefaultParameterHandler implements ParameterHandler {
 	private final TypeHandlerRegistry typeHandlerRegistry;
 
 	private final MappedStatement mappedStatement;
 	private final Object parameterObject;
-	private BoundSql boundSql;
+	private BoundJson boundJson;
 	private Configuration configuration;
 
-	public DefaultParameterHandler(MappedStatement mappedStatement, Object parameterObject, BoundSql boundSql) {
+	public DefaultParameterHandler(MappedStatement mappedStatement, Object parameterObject, BoundJson boundJson) {
 		this.mappedStatement = mappedStatement;
 		this.configuration = mappedStatement.getConfiguration();
 		this.typeHandlerRegistry = mappedStatement.getConfiguration().getTypeHandlerRegistry();
 		this.parameterObject = parameterObject;
-		this.boundSql = boundSql;
+		this.boundJson = boundJson;
 	}
 
 	public Object getParameterObject() {
@@ -31,7 +39,7 @@ public class DefaultParameterHandler implements ParameterHandler {
 
 	public void setParameters(PreparedStatement ps) throws SQLException {
 		ErrorContext.instance().activity("setting parameters").object(mappedStatement.getParameterMap().getId());
-		List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
+		List<ParameterMapping> parameterMappings = boundJson.getParameterMappings();
 		if (parameterMappings != null) {
 		MetaObject metaObject = parameterObject == null ? null : configuration.newMetaObject(parameterObject);
 		for (int i = 0; i < parameterMappings.size(); i++) {
@@ -39,8 +47,8 @@ public class DefaultParameterHandler implements ParameterHandler {
 			if (parameterMapping.getMode() != ParameterMode.OUT) {
 			Object value;
 			String propertyName = parameterMapping.getProperty();
-			if (boundSql.hasAdditionalParameter(propertyName)) { // issue #448 ask first for additional params
-				value = boundSql.getAdditionalParameter(propertyName);
+			if (boundJson.hasAdditionalParameter(propertyName)) { // issue #448 ask first for additional params
+				value = boundJson.getAdditionalParameter(propertyName);
 			} else if (parameterObject == null) {
 				value = null;
 			} else if (typeHandlerRegistry.hasTypeHandler(parameterObject.getClass())) {

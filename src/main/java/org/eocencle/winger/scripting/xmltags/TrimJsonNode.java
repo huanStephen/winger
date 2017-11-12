@@ -70,7 +70,7 @@ public class TrimJsonNode implements JsonNode {
 				applyPrefix(sqlBuffer, trimmedUppercaseSql);
 				applySuffix(sqlBuffer, trimmedUppercaseSql);
 			}
-			delegate.appendSql(sqlBuffer.toString());
+			delegate.appendJson(sqlBuffer.toString());
 		}
 
 		@Override
@@ -89,13 +89,13 @@ public class TrimJsonNode implements JsonNode {
 		}
 
 		@Override
-		public void appendSql(String sql) {
+		public void appendJson(String sql) {
 			sqlBuffer.append(sql);
 		}
 
 		@Override
-		public String getSql() {
-			return delegate.getSql();
+		public String getJson() {
+			return delegate.getJson();
 		}
 
 		private void applyPrefix(StringBuilder sql, String trimmedUppercaseSql) {

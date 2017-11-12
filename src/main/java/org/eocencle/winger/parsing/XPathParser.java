@@ -23,6 +23,7 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
+import org.xml.sax.helpers.DefaultHandler;
 
 public class XPathParser {
 	private Document document;
@@ -210,16 +211,17 @@ public class XPathParser {
 		// important: this must only be called AFTER common constructor
 		try {
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-			factory.setValidating(validation);
+			/*factory.setValidating(validation);
 	
 			factory.setNamespaceAware(false);
 			factory.setIgnoringComments(true);
 			factory.setIgnoringElementContentWhitespace(false);
 			factory.setCoalescing(false);
-			factory.setExpandEntityReferences(true);
+			factory.setExpandEntityReferences(true);*/
 	
 			DocumentBuilder builder = factory.newDocumentBuilder();
-			builder.setEntityResolver(entityResolver);
+			//builder.setEntityResolver(entityResolver);
+			builder.setEntityResolver(new IgnoreDTDEntityResolver());
 			builder.setErrorHandler(new ErrorHandler() {
 				public void error(SAXParseException exception) throws SAXException {
 					throw exception;

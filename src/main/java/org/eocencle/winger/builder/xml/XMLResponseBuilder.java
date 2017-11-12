@@ -14,7 +14,7 @@ import java.util.Properties;
 import org.eocencle.winger.builder.BaseBuilder;
 import org.eocencle.winger.builder.CacheRefResolver;
 import org.eocencle.winger.builder.IncompleteElementException;
-import org.eocencle.winger.builder.MapperBuilderAssistant;
+import org.eocencle.winger.builder.ResponseBuilderAssistant;
 import org.eocencle.winger.builder.ResultMapResolver;
 import org.eocencle.winger.cache.Cache;
 import org.eocencle.winger.executor.ErrorContext;
@@ -28,12 +28,13 @@ import org.eocencle.winger.mapping.ResultMapping;
 import org.eocencle.winger.parsing.XNode;
 import org.eocencle.winger.parsing.XPathParser;
 import org.eocencle.winger.session.Configuration;
+import org.eocencle.winger.type.ContextPathType;
 import org.eocencle.winger.type.JdbcType;
 import org.eocencle.winger.type.TypeHandler;
 
 public class XMLResponseBuilder extends BaseBuilder {
 	private XPathParser parser;
-	private MapperBuilderAssistant builderAssistant;
+	private ResponseBuilderAssistant builderAssistant;
 	private Map<String, XNode> sqlFragments;
 	private Map<String, XNode> jsonFragments;
 	private String resource;
@@ -41,7 +42,7 @@ public class XMLResponseBuilder extends BaseBuilder {
 	@Deprecated
 	public XMLResponseBuilder(Reader reader, Configuration configuration, String resource, Map<String, XNode> sqlFragments, String namespace) {
 		this(reader, configuration, resource, sqlFragments);
-		this.builderAssistant.setCurrentNamespace(namespace);
+		this.builderAssistant.setCurrentContextPath(namespace);
 	}
 
 	@Deprecated
@@ -51,19 +52,19 @@ public class XMLResponseBuilder extends BaseBuilder {
 
 	public XMLResponseBuilder(InputStream inputStream, Configuration configuration, String resource, Map<String, XNode> sqlFragments, String namespace) {
 		this(inputStream, configuration, resource, sqlFragments);
-		this.builderAssistant.setCurrentNamespace(namespace);
+		this.builderAssistant.setCurrentContextPath(namespace);
 	}
 
-	public XMLResponseBuilder(InputStream inputStream, Configuration configuration, String resource, Map<String, XNode> sqlFragments) {
+	public XMLResponseBuilder(InputStream inputStream, Configuration configuration, String resource, Map<String, XNode> jsonFragments) {
 		this(new XPathParser(inputStream, true, configuration.getVariables(), new XMLMapperEntityResolver()),
-			configuration, resource, sqlFragments);
+			configuration, resource, jsonFragments);
 	}
 
-	private XMLResponseBuilder(XPathParser parser, Configuration configuration, String resource, Map<String, XNode> sqlFragments) {
+	private XMLResponseBuilder(XPathParser parser, Configuration configuration, String resource, Map<String, XNode> jsonFragments) {
 		super(configuration);
-		this.builderAssistant = new MapperBuilderAssistant(configuration, resource);
+		this.builderAssistant = new ResponseBuilderAssistant(configuration, resource);
 		this.parser = parser;
-		this.sqlFragments = sqlFragments;
+		this.jsonFragments = jsonFragments;
 		this.resource = resource;
 	}
 
@@ -85,8 +86,14 @@ public class XMLResponseBuilder extends BaseBuilder {
 
 	private void configurationElement(XNode context) {
 		try {
-			String namespace = context.getStringAttribute("contextpath");
-			this.builderAssistant.setCurrentNamespace(namespace);
+			String contextpath = context.getStringAttribute("contextpath");
+			if (0 != contextpath.indexOf("/")) {
+				contextpath = "/" + contextpath;
+			}
+			if (contextpath.lastIndexOf("/") == contextpath.length() - 1) {
+				contextpath = contextpath.substring(0, contextpath.length() - 1);
+			}
+			this.builderAssistant.setCurrentContextPath(contextpath);
 			this.jsonElement(context.evalNodes("json"));
 			this.buildBranchFormContext(context.evalNodes("branch"));
 		} catch (Exception e) {
@@ -103,7 +110,7 @@ public class XMLResponseBuilder extends BaseBuilder {
 
 	private void buildStatementFromContext(List<XNode> list, String requiredDatabaseId) {
 		for (XNode context : list) {
-			final XMLStatementBuilder statementParser = new XMLStatementBuilder(configuration, builderAssistant, context, requiredDatabaseId);
+			final XMLStatementBuilder statementParser = null; //new XMLStatementBuilder(configuration, builderAssistant, context, requiredDatabaseId);
 			try {
 				statementParser.parseStatementNode();
 			} catch (IncompleteElementException e) {
@@ -170,7 +177,7 @@ public class XMLResponseBuilder extends BaseBuilder {
 
 	private void cacheRefElement(XNode context) {
 		if (context != null) {
-			configuration.addCacheRef(builderAssistant.getCurrentNamespace(), context.getStringAttribute("namespace"));
+			configuration.addCacheRef(builderAssistant.getCurrentContextPath(), context.getStringAttribute("namespace"));
 			CacheRefResolver cacheRefResolver = new CacheRefResolver(builderAssistant, context.getStringAttribute("namespace"));
 			try {
 				cacheRefResolver.resolveCacheRef();
@@ -309,7 +316,7 @@ public class XMLResponseBuilder extends BaseBuilder {
 		for (XNode context : list) {
 			String databaseId = context.getStringAttribute("databaseId");
 			String id = context.getStringAttribute("id");
-			id = builderAssistant.applyCurrentNamespace(id, false);
+			id = builderAssistant.applyCurrentContextPath(id, false, ContextPathType.BRANCH);
 			if (databaseIdMatchesCurrent(id, databaseId, requiredDatabaseId)) sqlFragments.put(id, context);
 		}
 	}
@@ -317,6 +324,8 @@ public class XMLResponseBuilder extends BaseBuilder {
 	private void jsonElement(List<XNode> list) throws Exception {
 		for (XNode context : list) {
 			String id = context.getStringAttribute("id");
+			id = this.builderAssistant.applyCurrentContextPath(id, false, ContextPathType.JSON);
+			
 			this.jsonFragments.put(id, context);
 		}
 	}
@@ -369,7 +378,7 @@ public class XMLResponseBuilder extends BaseBuilder {
 	}
 
 	private void bindMapperForNamespace() {
-		String namespace = builderAssistant.getCurrentNamespace();
+		String namespace = builderAssistant.getCurrentContextPath();
 		if (namespace != null) {
 			Class<?> boundType = null;
 			try {
@@ -384,6 +393,27 @@ public class XMLResponseBuilder extends BaseBuilder {
 					// look at MapperAnnotationBuilder#loadXmlResource
 					configuration.addLoadedResource("namespace:" + namespace);
 					configuration.addMapper(boundType);
+				}
+			}
+		}
+	}
+	
+	private void bindResponseForContextPath() {
+		String contextPath = this.builderAssistant.getCurrentContextPath();
+		if (contextPath != null) {
+			Class<?> boundType = null;
+			try {
+				boundType = Resources.classForName(contextPath);
+			} catch (ClassNotFoundException e) {
+				//ignore, bound type is not required
+			}
+			if (boundType != null) {
+				if (!this.configuration.hasMapper(boundType)) {
+					// Spring may not know the real resource name so we set a flag
+					// to prevent loading again this resource from the mapper interface
+					// look at MapperAnnotationBuilder#loadXmlResource
+					this.configuration.addLoadedResource("contextpath:" + contextPath);
+					this.configuration.addMapper(boundType);
 				}
 			}
 		}

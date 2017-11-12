@@ -21,11 +21,11 @@ import java.util.Set;
 public final class TypeHandlerRegistry {
 	private final Map<JdbcType, TypeHandler<?>> JDBC_TYPE_HANDLER_MAP = new EnumMap(JdbcType.class);
 	private final Map<Type, Map<JdbcType, TypeHandler<?>>> TYPE_HANDLER_MAP = new HashMap();
-	private final TypeHandler<Object> UNKNOWN_TYPE_HANDLER = new UnknownTypeHandler(this);
+	//private final TypeHandler<Object> UNKNOWN_TYPE_HANDLER = new UnknownTypeHandler(this);
 	private final Map<Class<?>, TypeHandler<?>> ALL_TYPE_HANDLERS_MAP = new HashMap();
 
 	public TypeHandlerRegistry() {
-		this.register((Class) Boolean.class, (TypeHandler) (new BooleanTypeHandler()));
+		/*this.register((Class) Boolean.class, (TypeHandler) (new BooleanTypeHandler()));
 		this.register((Class) Boolean.TYPE, (TypeHandler) (new BooleanTypeHandler()));
 		this.register((JdbcType) JdbcType.BOOLEAN, (TypeHandler) (new BooleanTypeHandler()));
 		this.register((JdbcType) JdbcType.BIT, (TypeHandler) (new BooleanTypeHandler()));
@@ -108,7 +108,7 @@ public final class TypeHandlerRegistry {
 		}
 
 		this.register((Class) Character.class, (TypeHandler) (new CharacterTypeHandler()));
-		this.register((Class) Character.TYPE, (TypeHandler) (new CharacterTypeHandler()));
+		this.register((Class) Character.TYPE, (TypeHandler) (new CharacterTypeHandler()));*/
 	}
 
 	public boolean hasTypeHandler(Class<?> javaType) {

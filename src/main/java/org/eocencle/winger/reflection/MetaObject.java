@@ -4,6 +4,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.eocencle.winger.reflection.factory.ObjectFactory;
+import org.eocencle.winger.reflection.property.PropertyTokenizer;
+import org.eocencle.winger.reflection.wrapper.ObjectWrapper;
+import org.eocencle.winger.reflection.wrapper.ObjectWrapperFactory;
+
 public class MetaObject {
 	private Object originalObject;
 	private ObjectWrapper objectWrapper;

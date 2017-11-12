@@ -1,17 +1,18 @@
 package org.eocencle.winger.builder.xml;
 
 import org.eocencle.winger.builder.IncompleteElementException;
-import org.eocencle.winger.builder.MapperBuilderAssistant;
+import org.eocencle.winger.builder.ResponseBuilderAssistant;
 import org.eocencle.winger.parsing.XNode;
 import org.eocencle.winger.session.Configuration;
+import org.eocencle.winger.type.ContextPathType;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class XMLIncludeTransformer {
 	private final Configuration configuration;
-	private final MapperBuilderAssistant builderAssistant;
+	private final ResponseBuilderAssistant builderAssistant;
 
-	public XMLIncludeTransformer(Configuration configuration, MapperBuilderAssistant builderAssistant) {
+	public XMLIncludeTransformer(Configuration configuration, ResponseBuilderAssistant builderAssistant) {
 		this.configuration = configuration;
 		this.builderAssistant = builderAssistant;
 	}
@@ -37,7 +38,7 @@ public class XMLIncludeTransformer {
 	}
 
 	private Node findSqlFragment(String refid) {
-		refid = builderAssistant.applyCurrentNamespace(refid, true);
+		refid = builderAssistant.applyCurrentContextPath(refid, true);
 		try {
 			XNode nodeToInclude = configuration.getSqlFragments().get(refid);
 			Node result = nodeToInclude.getNode().cloneNode(true);
@@ -48,9 +49,9 @@ public class XMLIncludeTransformer {
 	}
 	
 	private Node findJsonFragment(String refid) {
-		refid = this.builderAssistant.applyCurrentNamespace(refid, true);
+		refid = this.builderAssistant.applyCurrentContextPath(refid, true, ContextPathType.JSON);
 		try {
-			XNode nodeToInclude = configuration.getSqlFragments().get(refid);
+			XNode nodeToInclude = this.configuration.getJsonFragments().get(refid);
 			Node result = nodeToInclude.getNode().cloneNode(true);
 			return result;
 		} catch (IllegalArgumentException e) {

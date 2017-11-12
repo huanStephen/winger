@@ -13,6 +13,7 @@ import java.util.StringTokenizer;
 import org.eocencle.winger.cache.Cache;
 import org.eocencle.winger.executor.ErrorContext;
 import org.eocencle.winger.executor.keygen.KeyGenerator;
+import org.eocencle.winger.mapping.CacheBuilder;
 import org.eocencle.winger.mapping.Discriminator;
 import org.eocencle.winger.mapping.MappedStatement;
 import org.eocencle.winger.mapping.ParameterMap;
@@ -35,7 +36,7 @@ public class MapperBuilderAssistant extends BaseBuilder {
 	private String currentNamespace;
 	private String resource;
 	private Cache currentCache;
-	private boolean unresolvedCacheRef; // issue #676
+	private boolean unresolvedCacheRef;
 
 	public MapperBuilderAssistant(Configuration configuration, String resource) {
 		super(configuration);
