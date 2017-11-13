@@ -3,8 +3,10 @@ package org.eocencle.winger.scripting.xmltags;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eocencle.winger.ognl.OgnlContext;
 import org.eocencle.winger.ognl.OgnlException;
 import org.eocencle.winger.ognl.OgnlRuntime;
+import org.eocencle.winger.ognl.PropertyAccessor;
 import org.eocencle.winger.reflection.MetaObject;
 import org.eocencle.winger.session.Configuration;
 
@@ -56,26 +58,26 @@ public class DynamicContext {
 
 		private MetaObject parameterMetaObject;
 		public ContextMap(MetaObject parameterMetaObject) {
-		this.parameterMetaObject = parameterMetaObject;
+			this.parameterMetaObject = parameterMetaObject;
 		}
 
 		@Override
 		public Object get(Object key) {
-		String strKey = (String) key;
-		if (super.containsKey(strKey)) {
-			return super.get(strKey);
-		}
-
-		if (parameterMetaObject != null) {
-			Object object = parameterMetaObject.getValue(strKey);
-			if (object != null) {
-			super.put(strKey, object);
+			String strKey = (String) key;
+			if (super.containsKey(strKey)) {
+				return super.get(strKey);
 			}
-
-			return object;
-		}
-
-		return null;
+	
+			if (parameterMetaObject != null) {
+				Object object = parameterMetaObject.getValue(strKey);
+				if (object != null) {
+					super.put(strKey, object);
+				}
+	
+				return object;
+			}
+	
+			return null;
 		}
 	}
 
@@ -101,6 +103,16 @@ public class DynamicContext {
 			throws OgnlException {
 			Map map = (Map) target;
 			map.put(name, value);
+		}
+
+		@Override
+		public String getSourceAccessor(OgnlContext arg0, Object arg1, Object arg2) {
+			return null;
+		}
+
+		@Override
+		public String getSourceSetter(OgnlContext arg0, Object arg1, Object arg2) {
+			return null;
 		}
 	}
 }

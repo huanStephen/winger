@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eocencle.winger.parsing.GenericTokenParser;
+import org.eocencle.winger.parsing.TokenHandler;
 import org.eocencle.winger.session.Configuration;
 
 public class ForEachJsonNode implements JsonNode {

@@ -16,13 +16,13 @@ public class DynamicJsonSource implements JsonSource {
 		this.rootJsonNode = rootJsonNode;
 	}
 
-	public BoundJson getBoundJson(Object parameterObject) {
-		DynamicContext context = new DynamicContext(configuration, parameterObject);
+	public BoundJson getBoundJson(Map<String, Object> params) {
+		DynamicContext context = new DynamicContext(configuration, params);
 		this.rootJsonNode.apply(context);
 		JsonSourceBuilder jsonSourceParser = new JsonSourceBuilder(configuration);
-		Class<?> parameterType = parameterObject == null ? Object.class : parameterObject.getClass();
+		Class<?> parameterType = params == null ? Object.class : params.getClass();
 		JsonSource jsonSource = jsonSourceParser.parse(context.getJson(), parameterType, context.getBindings());
-		BoundJson boundJson = jsonSource.getBoundJson(parameterObject);
+		BoundJson boundJson = jsonSource.getBoundJson(params);
 		for (Map.Entry<String, Object> entry : context.getBindings().entrySet()) {
 			boundJson.setAdditionalParameter(entry.getKey(), entry.getValue());
 		}

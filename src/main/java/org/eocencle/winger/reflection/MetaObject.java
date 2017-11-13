@@ -6,6 +6,9 @@ import java.util.Map;
 
 import org.eocencle.winger.reflection.factory.ObjectFactory;
 import org.eocencle.winger.reflection.property.PropertyTokenizer;
+import org.eocencle.winger.reflection.wrapper.BeanWrapper;
+import org.eocencle.winger.reflection.wrapper.CollectionWrapper;
+import org.eocencle.winger.reflection.wrapper.MapWrapper;
 import org.eocencle.winger.reflection.wrapper.ObjectWrapper;
 import org.eocencle.winger.reflection.wrapper.ObjectWrapperFactory;
 
@@ -21,23 +24,23 @@ public class MetaObject {
 		this.objectWrapperFactory = objectWrapperFactory;
 
 		if (object instanceof ObjectWrapper) {
-		this.objectWrapper = (ObjectWrapper) object;
+			this.objectWrapper = (ObjectWrapper) object;
 		} else if (objectWrapperFactory.hasWrapperFor(object)) {
-		this.objectWrapper = objectWrapperFactory.getWrapperFor(this, object);
+			this.objectWrapper = objectWrapperFactory.getWrapperFor(this, object);
 		} else if (object instanceof Map) {
-		this.objectWrapper = new MapWrapper(this, (Map) object);
+			this.objectWrapper = new MapWrapper(this, (Map) object);
 		} else if (object instanceof Collection) {
-		this.objectWrapper = new CollectionWrapper(this, (Collection) object);
+			this.objectWrapper = new CollectionWrapper(this, (Collection) object);
 		} else {
-		this.objectWrapper = new BeanWrapper(this, object);
+			this.objectWrapper = new BeanWrapper(this, object);
 		}
 	}
 
 	public static MetaObject forObject(Object object, ObjectFactory objectFactory, ObjectWrapperFactory objectWrapperFactory) {
 		if (object == null) {
-		return SystemMetaObject.NULL_META_OBJECT;
+			return SystemMetaObject.NULL_META_OBJECT;
 		} else {
-		return new MetaObject(object, objectFactory, objectWrapperFactory);
+			return new MetaObject(object, objectFactory, objectWrapperFactory);
 		}
 	}
 
@@ -84,31 +87,31 @@ public class MetaObject {
 	public Object getValue(String name) {
 		PropertyTokenizer prop = new PropertyTokenizer(name);
 		if (prop.hasNext()) {
-		MetaObject metaValue = metaObjectForProperty(prop.getIndexedName());
-		if (metaValue == SystemMetaObject.NULL_META_OBJECT) {
-			return null;
+			MetaObject metaValue = metaObjectForProperty(prop.getIndexedName());
+			if (metaValue == SystemMetaObject.NULL_META_OBJECT) {
+				return null;
+			} else {
+				return metaValue.getValue(prop.getChildren());
+			}
 		} else {
-			return metaValue.getValue(prop.getChildren());
-		}
-		} else {
-		return objectWrapper.get(prop);
+			return objectWrapper.get(prop);
 		}
 	}
 
 	public void setValue(String name, Object value) {
 		PropertyTokenizer prop = new PropertyTokenizer(name);
 		if (prop.hasNext()) {
-		MetaObject metaValue = metaObjectForProperty(prop.getIndexedName());
-		if (metaValue == SystemMetaObject.NULL_META_OBJECT) {
-			if (value == null && prop.getChildren() != null) {
-			return; // don't instantiate child path if value is null
-			} else {
-			metaValue = objectWrapper.instantiatePropertyValue(name, prop, objectFactory);
+			MetaObject metaValue = metaObjectForProperty(prop.getIndexedName());
+			if (metaValue == SystemMetaObject.NULL_META_OBJECT) {
+				if (value == null && prop.getChildren() != null) {
+					return; // don't instantiate child path if value is null
+				} else {
+					metaValue = objectWrapper.instantiatePropertyValue(name, prop, objectFactory);
+				}
 			}
-		}
-		metaValue.setValue(prop.getChildren(), value);
+			metaValue.setValue(prop.getChildren(), value);
 		} else {
-		objectWrapper.set(prop, value);
+			objectWrapper.set(prop, value);
 		}
 	}
 

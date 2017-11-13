@@ -27,6 +27,7 @@ import org.eocencle.winger.io.ResolverUtil;
 import org.eocencle.winger.javassist.bytecode.analysis.Executor;
 import org.eocencle.winger.logging.Log;
 import org.eocencle.winger.logging.LogFactory;
+import org.eocencle.winger.mapping.BoundJson;
 import org.eocencle.winger.mapping.BoundSql;
 import org.eocencle.winger.mapping.Environment;
 import org.eocencle.winger.mapping.MappedStatement;
@@ -383,13 +384,13 @@ public class Configuration {
 		return MetaObject.forObject(object, objectFactory, objectWrapperFactory);
 	}
 
-	public ParameterHandler newParameterHandler(MappedStatement mappedStatement, Object parameterObject, BoundSql boundSql) {
-		ParameterHandler parameterHandler = mappedStatement.getLang().createParameterHandler(mappedStatement, parameterObject, boundSql);
+	public ParameterHandler newParameterHandler(MappedStatement mappedStatement, Object parameterObject, BoundJson boundJson) {
+		ParameterHandler parameterHandler = mappedStatement.getLang().createParameterHandler(mappedStatement, parameterObject, boundJson);
 		parameterHandler = (ParameterHandler) interceptorChain.pluginAll(parameterHandler);
 		return parameterHandler;
 	}
 
-	public ResultSetHandler newResultSetHandler(Executor executor, MappedStatement mappedStatement, RowBounds rowBounds, ParameterHandler parameterHandler,
+	/*public ResultSetHandler newResultSetHandler(Executor executor, MappedStatement mappedStatement, RowBounds rowBounds, ParameterHandler parameterHandler,
 		ResultHandler resultHandler, BoundSql boundSql) {
 		ResultSetHandler resultSetHandler = mappedStatement.hasNestedResultMaps() ? new NestedResultSetHandler(executor, mappedStatement, parameterHandler, resultHandler, boundSql,
 			rowBounds) : new FastResultSetHandler(executor, mappedStatement, parameterHandler, resultHandler, boundSql, rowBounds);
@@ -427,7 +428,7 @@ public class Configuration {
 		}
 		executor = (Executor) interceptorChain.pluginAll(executor);
 		return executor;
-	}
+	}*/
 	
 	public void addKeyGenerator(String id, KeyGenerator keyGenerator) {
 		keyGenerators.put(id, keyGenerator);
@@ -568,10 +569,14 @@ public class Configuration {
 	public MappedStatement getMappedStatement(String id) {
 		return this.getMappedStatement(id, true);
 	}
+	
+	public ResponseBranch getResponseBranch(String action) {
+		return this.responseBranchs.get(action);
+	}
 
 	public MappedStatement getMappedStatement(String id, boolean validateIncompleteStatements) {
 		if (validateIncompleteStatements) {
-		buildAllStatements();
+			buildAllStatements();
 		}
 		return mappedStatements.get(id);
 	}

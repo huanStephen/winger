@@ -22,18 +22,18 @@ public class TextJsonNode implements JsonNode {
 		private DynamicContext context;
 
 		public BindingTokenParser(DynamicContext context) {
-		this.context = context;
+			this.context = context;
 		}
 
 		public String handleToken(String content) {
-		Object parameter = context.getBindings().get("_parameter");
-		if (parameter == null) {
-			context.getBindings().put("value", null);
-		} else if (SimpleTypeRegistry.isSimpleType(parameter.getClass())) {
-			context.getBindings().put("value", parameter);
-		}
-		Object value = OgnlCache.getValue(content, context.getBindings());
-		return (value == null ? "" : String.valueOf(value)); // issue #274 return "" instead of "null"
+			Object parameter = context.getBindings().get("_parameter");
+			if (parameter == null) {
+				context.getBindings().put("value", null);
+			} else if (SimpleTypeRegistry.isSimpleType(parameter.getClass())) {
+				context.getBindings().put("value", parameter);
+			}
+			Object value = OgnlCache.getValue(content, context.getBindings());
+			return (value == null ? "" : String.valueOf(value)); // issue #274 return "" instead of "null"
 		}
 	}
 }

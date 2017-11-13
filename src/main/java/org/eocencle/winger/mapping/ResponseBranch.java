@@ -3,13 +3,13 @@ package org.eocencle.winger.mapping;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.eocencle.winger.cache.Cache;
 import org.eocencle.winger.executor.keygen.Jdbc3KeyGenerator;
 import org.eocencle.winger.executor.keygen.KeyGenerator;
 import org.eocencle.winger.executor.keygen.NoKeyGenerator;
 import org.eocencle.winger.logging.Log;
-import org.eocencle.winger.logging.LogFactory;
 import org.eocencle.winger.scripting.LanguageDriver;
 import org.eocencle.winger.session.Configuration;
 
@@ -255,8 +255,8 @@ public final class ResponseBranch {
 		return lang;
 	}
 
-	public BoundJson getBoundJson(Object parameterObject) {
-		BoundJson boundJson = this.jsonSource.getBoundJson(parameterObject);
+	public BoundJson getBoundJson(Map<String, Object> params) {
+		BoundJson boundJson = this.jsonSource.getBoundJson(params);
 		List<ParameterMapping> parameterMappings = boundJson.getParameterMappings();
 		if (parameterMappings == null || parameterMappings.size() <= 0) {
 			boundJson = new BoundJson(configuration, boundJson.getJson(), parameterMap.getParameterMappings(), parameterObject);
