@@ -18,6 +18,8 @@ import javax.xml.xpath.XPathFactory;
 import org.eocencle.winger.builder.xml.XMLConfigBuilder;
 import org.eocencle.winger.builder.xml.XMLMapperEntityResolver;
 import org.eocencle.winger.scripting.xmltags.OgnlCache;
+import org.eocencle.winger.session.JsonSession;
+import org.eocencle.winger.session.JsonSessionFactory;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -37,8 +39,9 @@ public class Test {
 	
 	public static void testWinger() {
 		InputStream is = Test.class.getClassLoader().getResourceAsStream("config.xml");
-		XMLConfigBuilder config = new XMLConfigBuilder(is);
-		config.parse();
+		JsonSession session = new JsonSessionFactory().build(is);
+		Map<String, Object> params = new HashMap<>();
+		System.out.println(session.request("/winger/item/addItem", params));
 	}
 	
 	public static void testOgnl() {
