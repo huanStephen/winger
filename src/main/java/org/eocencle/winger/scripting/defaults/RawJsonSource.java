@@ -1,6 +1,7 @@
 package org.eocencle.winger.scripting.defaults;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.eocencle.winger.builder.SqlSourceBuilder;
 import org.eocencle.winger.mapping.BoundJson;
@@ -16,11 +17,11 @@ public class RawJsonSource implements JsonSource {
 		this.sql = sql;
 	}
 
-	public BoundJson getBoundJson(Object parameterObject) {
+	public BoundJson getBoundJson(Map<String, Object> params) {
 		SqlSourceBuilder sqlSourceParser = new SqlSourceBuilder(configuration);
-		Class<?> parameterType = parameterObject == null ? Object.class : parameterObject.getClass();
+		Class<?> parameterType = params == null ? Object.class : params.getClass();
 		JsonSource sqlSource = sqlSourceParser.parse(sql, parameterType, new HashMap<String, Object>());
-		BoundJson boundSql = sqlSource.getBoundJson(parameterObject);
+		BoundJson boundSql = sqlSource.getBoundJson(params);
 		return boundSql;
 	}
 }

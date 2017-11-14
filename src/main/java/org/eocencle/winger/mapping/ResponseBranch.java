@@ -259,7 +259,7 @@ public final class ResponseBranch {
 		BoundJson boundJson = this.jsonSource.getBoundJson(params);
 		List<ParameterMapping> parameterMappings = boundJson.getParameterMappings();
 		if (parameterMappings == null || parameterMappings.size() <= 0) {
-			boundJson = new BoundJson(configuration, boundJson.getJson(), parameterMap.getParameterMappings(), parameterObject);
+			boundJson = new BoundJson(configuration, boundJson.getJson(), parameterMap.getParameterMappings(), params);
 		}
 
 		// check for nested result maps in parameter mappings (issue #30)

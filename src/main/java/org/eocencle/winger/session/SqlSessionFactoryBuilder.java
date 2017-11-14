@@ -6,6 +6,7 @@ import java.io.Reader;
 import java.util.Properties;
 
 import org.eocencle.winger.builder.xml.XMLConfigBuilder;
+import org.eocencle.winger.executor.ErrorContext;
 
 public class SqlSessionFactoryBuilder {
 	public SqlSessionFactory build(Reader reader) {

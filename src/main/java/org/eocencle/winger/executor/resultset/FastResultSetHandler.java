@@ -13,22 +13,30 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.eocencle.winger.cache.Cache;
 import org.eocencle.winger.executor.ExecutorException;
 import org.eocencle.winger.executor.loader.ProxyFactory;
+import org.eocencle.winger.executor.loader.ResultLoaderMap;
 import org.eocencle.winger.executor.parameter.ParameterHandler;
+import org.eocencle.winger.io.Resources;
 import org.eocencle.winger.javassist.bytecode.analysis.Executor;
 import org.eocencle.winger.mapping.BoundSql;
+import org.eocencle.winger.mapping.Discriminator;
 import org.eocencle.winger.mapping.MappedStatement;
 import org.eocencle.winger.mapping.ParameterMapping;
 import org.eocencle.winger.mapping.ParameterMode;
 import org.eocencle.winger.mapping.ResultMap;
+import org.eocencle.winger.mapping.ResultMapping;
 import org.eocencle.winger.reflection.MetaObject;
 import org.eocencle.winger.reflection.factory.ObjectFactory;
+import org.eocencle.winger.session.AutoMappingBehavior;
 import org.eocencle.winger.session.Configuration;
 import org.eocencle.winger.session.ResultHandler;
 import org.eocencle.winger.session.RowBounds;
+import org.eocencle.winger.type.JdbcType;
 import org.eocencle.winger.type.TypeHandler;
 import org.eocencle.winger.type.TypeHandlerRegistry;
+import org.eocencle.winger.type.UnknownTypeHandler;
 
 public class FastResultSetHandler implements ResultSetHandler {
 	protected final Executor executor;

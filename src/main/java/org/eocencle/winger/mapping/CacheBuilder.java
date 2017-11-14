@@ -7,7 +7,9 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.eocencle.winger.cache.Cache;
+import org.eocencle.winger.cache.CacheException;
 import org.eocencle.winger.reflection.MetaObject;
+import org.eocencle.winger.reflection.SystemMetaObject;
 
 public class CacheBuilder {
 	private String id;

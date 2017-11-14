@@ -13,7 +13,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.eocencle.winger.reflection.invoker.GetFieldInvoker;
 import org.eocencle.winger.reflection.invoker.Invoker;
+import org.eocencle.winger.reflection.invoker.MethodInvoker;
 
 public class Reflector {
 	private static boolean classCacheEnabled = true;

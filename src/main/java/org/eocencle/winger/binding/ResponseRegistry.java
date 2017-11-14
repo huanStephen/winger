@@ -3,7 +3,9 @@ package org.eocencle.winger.binding;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eocencle.winger.builder.annotation.MapperAnnotationBuilder;
 import org.eocencle.winger.session.Configuration;
+import org.eocencle.winger.session.SqlSession;
 
 public class ResponseRegistry {
 	private Configuration config;
@@ -17,11 +19,11 @@ public class ResponseRegistry {
 	public <T> T getMapper(Class<T> type, SqlSession sqlSession) {
 		final MapperProxyFactory<T> mapperProxyFactory = (MapperProxyFactory<T>) knownMappers.get(type);
 		if (mapperProxyFactory == null)
-		throw new BindingException("Type " + type + " is not known to the MapperRegistry.");
+			throw new BindingException("Type " + type + " is not known to the MapperRegistry.");
 		try {
-		return mapperProxyFactory.newInstance(sqlSession);
+			return mapperProxyFactory.newInstance(sqlSession);
 		} catch (Exception e) {
-		throw new BindingException("Error getting mapper instance. Cause: " + e, e);
+			throw new BindingException("Error getting mapper instance. Cause: " + e, e);
 		}
 	}
 

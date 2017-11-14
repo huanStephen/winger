@@ -6,6 +6,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.eocencle.winger.executor.ExecutorException;
 import org.eocencle.winger.reflection.MetaObject;
 
 public class ResultLoaderMap {

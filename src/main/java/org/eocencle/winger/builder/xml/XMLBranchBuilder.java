@@ -18,6 +18,7 @@ import org.eocencle.winger.mapping.StatementType;
 import org.eocencle.winger.parsing.XNode;
 import org.eocencle.winger.scripting.LanguageDriver;
 import org.eocencle.winger.session.Configuration;
+import org.eocencle.winger.type.ContextPathType;
 
 import com.sun.javafx.collections.MappingChange.Map;
 
@@ -86,7 +87,7 @@ public class XMLBranchBuilder extends BaseBuilder {
 		String keyColumn = context.getStringAttribute("keyColumn");
 		KeyGenerator keyGenerator;
 		String keyStatementId = id + SelectKeyGenerator.SELECT_KEY_SUFFIX;
-		keyStatementId = builderAssistant.applyCurrentContextPath(keyStatementId, true);
+		keyStatementId = builderAssistant.applyCurrentContextPath(keyStatementId, true, ContextPathType.BRANCH);
 		if (configuration.hasKeyGenerator(keyStatementId)) {
 			keyGenerator = configuration.getKeyGenerator(keyStatementId);
 		} else {
@@ -151,7 +152,7 @@ public class XMLBranchBuilder extends BaseBuilder {
 			resultSetTypeEnum, flushCache, useCache, resultOrdered,
 			keyGenerator, keyProperty, null, databaseId, langDriver);
 
-		id = builderAssistant.applyCurrentContextPath(id, false);
+		id = builderAssistant.applyCurrentContextPath(id, false, ContextPathType.BRANCH);
 
 		MappedStatement keyStatement = configuration.getMappedStatement(id, false);
 		configuration.addKeyGenerator(id, new SelectKeyGenerator(keyStatement, executeBefore));
@@ -168,7 +169,7 @@ public class XMLBranchBuilder extends BaseBuilder {
 				return false;
 			}
 			// skip this statement if there is a previous one with a not null databaseId
-			id = builderAssistant.applyCurrentContextPath(id, false);
+			id = builderAssistant.applyCurrentContextPath(id, false, ContextPathType.BRANCH);
 			if (this.configuration.hasStatement(id, false)) {
 				MappedStatement previous = this.configuration.getMappedStatement(id, false); // issue #2
 				if (previous.getDatabaseId() != null) {

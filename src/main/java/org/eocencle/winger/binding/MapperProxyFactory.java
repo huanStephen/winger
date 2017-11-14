@@ -5,6 +5,8 @@ import java.lang.reflect.Proxy;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.eocencle.winger.session.SqlSession;
+
 public class MapperProxyFactory<T> {
 	private final Class<T> mapperInterface;
 	private Map<Method, MapperMethod> methodCache = new ConcurrentHashMap<Method, MapperMethod>();

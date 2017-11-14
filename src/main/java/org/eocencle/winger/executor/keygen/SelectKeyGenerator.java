@@ -9,6 +9,7 @@ import org.eocencle.winger.mapping.MappedStatement;
 import org.eocencle.winger.reflection.MetaObject;
 import org.eocencle.winger.session.Configuration;
 import org.eocencle.winger.session.ExecutorType;
+import org.eocencle.winger.session.RowBounds;
 
 public class SelectKeyGenerator implements KeyGenerator {
 	public static final String SELECT_KEY_SUFFIX = "!selectKey";

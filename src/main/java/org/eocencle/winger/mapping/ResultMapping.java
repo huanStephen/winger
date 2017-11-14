@@ -8,6 +8,7 @@ import java.util.Set;
 import org.eocencle.winger.session.Configuration;
 import org.eocencle.winger.type.JdbcType;
 import org.eocencle.winger.type.TypeHandler;
+import org.eocencle.winger.type.TypeHandlerRegistry;
 
 public class ResultMapping {
 	private Configuration configuration;

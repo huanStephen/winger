@@ -1,6 +1,7 @@
 package org.eocencle.winger.builder;
 
 import java.util.List;
+import java.util.Map;
 
 import org.eocencle.winger.mapping.BoundJson;
 import org.eocencle.winger.mapping.JsonSource;
@@ -22,7 +23,7 @@ public class StaticJsonSource implements JsonSource {
 		this.configuration = configuration;
 	}
 
-	public BoundJson getBoundJson(Object parameterObject) {
-		return new BoundJson(this.configuration, this.json, this.parameterMappings, parameterObject);
+	public BoundJson getBoundJson(Map<String, Object> params) {
+		return new BoundJson(this.configuration, this.json, this.parameterMappings, params);
 	}
 }
