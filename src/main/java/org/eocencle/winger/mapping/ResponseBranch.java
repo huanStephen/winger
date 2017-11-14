@@ -262,7 +262,6 @@ public final class ResponseBranch {
 			boundJson = new BoundJson(configuration, boundJson.getJson(), parameterMap.getParameterMappings(), params);
 		}
 
-		// check for nested result maps in parameter mappings (issue #30)
 		for (ParameterMapping pm : boundJson.getParameterMappings()) {
 			String rmId = pm.getResultMapId();
 			if (rmId != null) {

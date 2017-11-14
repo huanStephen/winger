@@ -16,6 +16,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.eocencle.winger.reflection.invoker.GetFieldInvoker;
 import org.eocencle.winger.reflection.invoker.Invoker;
 import org.eocencle.winger.reflection.invoker.MethodInvoker;
+import org.eocencle.winger.reflection.invoker.SetFieldInvoker;
+import org.eocencle.winger.reflection.property.PropertyNamer;
 
 public class Reflector {
 	private static boolean classCacheEnabled = true;

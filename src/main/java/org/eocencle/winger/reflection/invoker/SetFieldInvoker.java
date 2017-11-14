@@ -3,15 +3,16 @@ package org.eocencle.winger.reflection.invoker;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 
-public class GetFieldInvoker implements Invoker {
+public class SetFieldInvoker implements Invoker {
 	private Field field;
 
-	public GetFieldInvoker(Field field) {
+	public SetFieldInvoker(Field field) {
 		this.field = field;
 	}
 
 	public Object invoke(Object target, Object[] args) throws IllegalAccessException, InvocationTargetException {
-		return field.get(target);
+		field.set(target, args[0]);
+		return null;
 	}
 
 	public Class<?> getType() {

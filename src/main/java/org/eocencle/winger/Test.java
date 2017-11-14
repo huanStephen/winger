@@ -41,6 +41,8 @@ public class Test {
 		InputStream is = Test.class.getClassLoader().getResourceAsStream("config.xml");
 		JsonSession session = new JsonSessionFactory().build(is);
 		Map<String, Object> params = new HashMap<>();
+		params.put("id", 2);
+		params.put("value", "张三");
 		System.out.println(session.request("/winger/item/addItem", params));
 	}
 	
