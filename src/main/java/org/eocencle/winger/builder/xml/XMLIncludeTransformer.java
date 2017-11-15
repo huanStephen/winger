@@ -18,7 +18,7 @@ public class XMLIncludeTransformer {
 	}
 
 	public void applyIncludes(Node source) {
-		if (source.getNodeName().equals("include")) {
+		if ("include".equals(source.getNodeName())) {
 			Node toInclude = this.findJsonFragment(this.getStringAttribute(source, "refid"));
 			this.applyIncludes(toInclude);
 			if (toInclude.getOwnerDocument() != source.getOwnerDocument()) {
@@ -31,8 +31,8 @@ public class XMLIncludeTransformer {
 			toInclude.getParentNode().removeChild(toInclude);
 		} else if (source.getNodeType() == Node.ELEMENT_NODE) {
 			NodeList children = source.getChildNodes();
-			for (int i=0; i<children.getLength(); i++) {
-				applyIncludes(children.item(i));
+			for (int i = 0; i < children.getLength(); i++) {
+				this.applyIncludes(children.item(i));
 			}
 		}
 	}

@@ -14,9 +14,8 @@ public class BoundJson {
 	private Map<String, Object> additionalParameters;
 	private MetaObject metaParameters;
 
-	public BoundJson(Configuration configuration, String json, List<ParameterMapping> parameterMappings, Object parameterObject) {
+	public BoundJson(Configuration configuration, String json, Object parameterObject) {
 		this.json = json;
-		this.parameterMappings = parameterMappings;
 		this.parameterObject = parameterObject;
 		this.additionalParameters = new HashMap<String, Object>();
 		this.metaParameters = configuration.newMetaObject(additionalParameters);

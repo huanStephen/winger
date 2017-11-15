@@ -24,7 +24,7 @@ public class JsonSourceBuilder extends BaseBuilder {
 		ParameterMappingTokenHandler handler = new ParameterMappingTokenHandler(configuration, parameterType, additionalParameters);
 		GenericTokenParser parser = new GenericTokenParser("#{", "}", handler);
 		String json = parser.parse(originalSql);
-		return new StaticJsonSource(configuration, json, handler.getParameterMappings());
+		return new StaticJsonSource(configuration, json);
 	}
 
 	private static class ParameterMappingTokenHandler extends BaseBuilder implements TokenHandler {
@@ -37,10 +37,6 @@ public class JsonSourceBuilder extends BaseBuilder {
 		super(configuration);
 		this.parameterType = parameterType;
 		this.metaParameters = configuration.newMetaObject(additionalParameters);
-		}
-
-		public List<ParameterMapping> getParameterMappings() {
-			return parameterMappings;
 		}
 
 		public String handleToken(String content) {
