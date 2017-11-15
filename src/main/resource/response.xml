@@ -5,7 +5,7 @@
 		"say" : "hello wolrd"
 	</json>
 	<json id="result2">
-		"speak" : "you are welcome ${value}"
+		"speak${index - 1}" : "you are welcome ${value} ${index}"
 	</json>
 	<branch action="/item/addItem" method="post">
 		{
@@ -19,7 +19,9 @@
 					<include refid="result1" />
 				</if>
 				<if test="2 == id">
-					<include refid="result2" />
+					<foreach collection="idx" item="index" separator=",">
+						<include refid="result2" />
+					</foreach>
 				</if>
 			}
 		}

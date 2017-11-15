@@ -36,17 +36,6 @@ public class XMLIncludeTransformer {
 			}
 		}
 	}
-
-	private Node findSqlFragment(String refid) {
-		refid = builderAssistant.applyCurrentContextPath(refid, true);
-		try {
-			XNode nodeToInclude = configuration.getSqlFragments().get(refid);
-			Node result = nodeToInclude.getNode().cloneNode(true);
-			return result;
-		} catch (IllegalArgumentException e) {
-			throw new IncompleteElementException("Could not find SQL statement to include with refid '" + refid + "'", e);
-		}
-	}
 	
 	private Node findJsonFragment(String refid) {
 		refid = this.builderAssistant.applyCurrentContextPath(refid, true, ContextPathType.JSON);

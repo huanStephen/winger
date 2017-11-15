@@ -33,7 +33,7 @@ public class TextJsonNode implements JsonNode {
 				context.getBindings().put("value", parameter);
 			}
 			Object value = OgnlCache.getValue(content, context.getBindings());
-			return (value == null ? "" : String.valueOf(value)); // issue #274 return "" instead of "null"
+			return (value == null ? "" : String.valueOf(value));
 		}
 	}
 }

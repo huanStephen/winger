@@ -91,7 +91,6 @@ public class Configuration {
 	protected final Map<String, KeyGenerator> keyGenerators = new StrictMap<KeyGenerator>("Key Generators collection");
 
 	protected final Set<String> loadedResources = new HashSet<String>();
-	protected final Map<String, XNode> sqlFragments = new StrictMap<XNode>("XML fragments parsed from previous mappers");
 	protected final Map<String, XNode> jsonFragments = new StrictMap<XNode>("XML fragments parsed from previous responses");
 
 	protected final Collection<XMLStatementBuilder> incompleteStatements = new LinkedList<XMLStatementBuilder>();
@@ -574,10 +573,6 @@ public class Configuration {
 			buildAllStatements();
 		}
 		return mappedStatements.get(id);
-	}
-
-	public Map<String, XNode> getSqlFragments() {
-		return sqlFragments;
 	}
 	
 	public Map<String, XNode> getJsonFragments() {

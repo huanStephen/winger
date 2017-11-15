@@ -68,8 +68,6 @@ public class ForEachJsonNode implements JsonNode {
 				if (first) {
 					first = !((ForEachJsonNode.PrefixedContext) arg10).isPrefixApplied();
 				}
-
-				context = context;
 			}
 
 			this.applyClose(context);

@@ -105,7 +105,6 @@ public class XMLBranchBuilder extends BaseBuilder {
 		String action = this.context.getStringAttribute("action");
 		String method = this.context.getStringAttribute("method");
 
-		// Include Fragments before parsing
 		XMLIncludeTransformer includeParser = new XMLIncludeTransformer(this.configuration, this.builderAssistant);
 		includeParser.applyIncludes(this.context.getNode());
 

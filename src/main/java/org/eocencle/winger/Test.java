@@ -2,7 +2,9 @@ package org.eocencle.winger;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -15,8 +17,8 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import org.eocencle.winger.builder.xml.XMLConfigBuilder;
 import org.eocencle.winger.builder.xml.XMLMapperEntityResolver;
+import org.eocencle.winger.io.Resources;
 import org.eocencle.winger.scripting.xmltags.OgnlCache;
 import org.eocencle.winger.session.JsonSession;
 import org.eocencle.winger.session.JsonSessionFactory;
@@ -33,16 +35,22 @@ import org.xml.sax.helpers.DefaultHandler;
 
 public class Test {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		testWinger();
 	}
 	
-	public static void testWinger() {
-		InputStream is = Test.class.getClassLoader().getResourceAsStream("config.xml");
+	public static void testWinger() throws IOException {
+		InputStream is = Resources.getResourceAsStream("config.xml");
 		JsonSession session = new JsonSessionFactory().build(is);
 		Map<String, Object> params = new HashMap<>();
 		params.put("id", 2);
 		params.put("value", "张三");
+		List<Integer> list = new ArrayList<Integer>();
+		list.add(1);
+		list.add(2);
+		list.add(3);
+		list.add(4);
+		params.put("idx", list);
 		System.out.println(session.request("/winger/item/addItem", params));
 	}
 	

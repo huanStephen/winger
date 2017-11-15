@@ -35,24 +35,23 @@ import org.eocencle.winger.type.TypeHandler;
 public class XMLResponseBuilder extends BaseBuilder {
 	private XPathParser parser;
 	private ResponseBuilderAssistant builderAssistant;
-	private Map<String, XNode> sqlFragments;
 	private Map<String, XNode> jsonFragments;
 	private String resource;
 
 	@Deprecated
-	public XMLResponseBuilder(Reader reader, Configuration configuration, String resource, Map<String, XNode> sqlFragments, String namespace) {
-		this(reader, configuration, resource, sqlFragments);
-		this.builderAssistant.setCurrentContextPath(namespace);
+	public XMLResponseBuilder(Reader reader, Configuration configuration, String resource, Map<String, XNode> jsonFragments, String contextPath) {
+		this(reader, configuration, resource, jsonFragments);
+		this.builderAssistant.setCurrentContextPath(contextPath);
 	}
 
 	@Deprecated
-	public XMLResponseBuilder(Reader reader, Configuration configuration, String resource, Map<String, XNode> sqlFragments) {
-		this(new XPathParser(reader, true, configuration.getVariables(), new XMLMapperEntityResolver()), configuration, resource, sqlFragments);
+	public XMLResponseBuilder(Reader reader, Configuration configuration, String resource, Map<String, XNode> jsonFragments) {
+		this(new XPathParser(reader, true, configuration.getVariables(), new XMLMapperEntityResolver()), configuration, resource, jsonFragments);
 	}
 
-	public XMLResponseBuilder(InputStream inputStream, Configuration configuration, String resource, Map<String, XNode> sqlFragments, String namespace) {
-		this(inputStream, configuration, resource, sqlFragments);
-		this.builderAssistant.setCurrentContextPath(namespace);
+	public XMLResponseBuilder(InputStream inputStream, Configuration configuration, String resource, Map<String, XNode> jsonFragments, String contextPath) {
+		this(inputStream, configuration, resource, jsonFragments);
+		this.builderAssistant.setCurrentContextPath(contextPath);
 	}
 
 	public XMLResponseBuilder(InputStream inputStream, Configuration configuration, String resource, Map<String, XNode> jsonFragments) {
@@ -72,16 +71,7 @@ public class XMLResponseBuilder extends BaseBuilder {
 		if (!configuration.isResourceLoaded(resource)) {
 			this.configurationElement(parser.evalNode("/response"));
 			configuration.addLoadedResource(resource);
-			bindMapperForNamespace();
 		}
-
-		parsePendingResultMaps();
-		parsePendingChacheRefs();
-		parsePendingStatements();
-	}
-
-	public XNode getSqlFragment(String refid) {
-		return sqlFragments.get(refid);
 	}
 
 	private void configurationElement(XNode context) {
@@ -121,7 +111,7 @@ public class XMLResponseBuilder extends BaseBuilder {
 	
 	private void buildBranchFormContext(List<XNode> list) {
 		for (XNode context : list) {
-			final XMLBranchBuilder branchParser = new XMLBranchBuilder(configuration, builderAssistant, context);
+			final XMLBranchBuilder branchParser = new XMLBranchBuilder(this.configuration, this.builderAssistant, context);
 			try {
 				branchParser.parseBranchNode();
 			} catch (IncompleteElementException e) {
@@ -304,22 +294,6 @@ public class XMLResponseBuilder extends BaseBuilder {
 		}
 		return builderAssistant.buildDiscriminator(resultType, column, javaTypeClass, jdbcTypeEnum, typeHandlerClass, discriminatorMap);
 	}
-
-	private void sqlElement(List<XNode> list) throws Exception {
-		if (configuration.getDatabaseId() != null) {
-			sqlElement(list, configuration.getDatabaseId());
-		}
-		sqlElement(list, null);
-	}
-
-	private void sqlElement(List<XNode> list, String requiredDatabaseId) throws Exception {
-		for (XNode context : list) {
-			String databaseId = context.getStringAttribute("databaseId");
-			String id = context.getStringAttribute("id");
-			id = builderAssistant.applyCurrentContextPath(id, false, ContextPathType.BRANCH);
-			if (databaseIdMatchesCurrent(id, databaseId, requiredDatabaseId)) sqlFragments.put(id, context);
-		}
-	}
 	
 	private void jsonElement(List<XNode> list) throws Exception {
 		for (XNode context : list) {
@@ -328,26 +302,6 @@ public class XMLResponseBuilder extends BaseBuilder {
 			
 			this.jsonFragments.put(id, context);
 		}
-	}
-	
-	private boolean databaseIdMatchesCurrent(String id, String databaseId, String requiredDatabaseId) {
-		if (requiredDatabaseId != null) {
-			if (!requiredDatabaseId.equals(databaseId)) {
-				return false;
-			}
-		} else {
-			if (databaseId != null) {
-				return false;
-			}
-			// skip this fragment if there is a previous one with a not null databaseId
-			if (this.sqlFragments.containsKey(id)) {
-				XNode context = this.sqlFragments.get(id);
-				if (context.getStringAttribute("databaseId") != null) {
-					return false;
-				}
-			}
-		}
-		return true;
 	}
 
 	private ResultMapping buildResultMappingFromContext(XNode context, Class<?> resultType, ArrayList<ResultFlag> flags) throws Exception {
