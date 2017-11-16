@@ -1,17 +1,9 @@
 package org.eocencle.winger.builder;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import org.eocencle.winger.cache.Cache;
 import org.eocencle.winger.executor.ErrorContext;
-import org.eocencle.winger.mapping.Discriminator;
 import org.eocencle.winger.mapping.JsonSource;
 import org.eocencle.winger.mapping.ResponseBranch;
-import org.eocencle.winger.mapping.ResultFlag;
-import org.eocencle.winger.mapping.ResultMap;
-import org.eocencle.winger.mapping.ResultMapping;
 import org.eocencle.winger.scripting.LanguageDriver;
 import org.eocencle.winger.session.Configuration;
 import org.eocencle.winger.type.ContextPathType;
@@ -79,66 +71,6 @@ public class ResponseBuilderAssistant extends BaseBuilder {
 			base = "#" + base;
 		}
 		return this.currentContextPath + base;
-	}
-
-	public Cache useCacheRef(String contextPath) {
-		if (contextPath == null) {
-			throw new BuilderException("cache-ref element requires a namespace attribute.");
-		}
-		try {
-			unresolvedCacheRef = true;
-			Cache cache = configuration.getCache(contextPath);
-			if (cache == null) {
-				throw new IncompleteElementException("No cache for contextpath '" + contextPath + "' could be found.");
-			}
-			currentCache = cache;
-			unresolvedCacheRef = false;
-			return cache;
-		} catch (IllegalArgumentException e) {
-			throw new IncompleteElementException("No cache for contextpath '" + contextPath + "' could be found.", e);
-		}
-	}
-
-	public ResultMap addResultMap(
-		String id,
-		Class<?> type,
-		String extend,
-		Discriminator discriminator,
-		List<ResultMapping> resultMappings,
-		Boolean autoMapping) {
-		id = this.applyCurrentContextPath(id, false, ContextPathType.BRANCH);
-		extend = this.applyCurrentContextPath(extend, true, ContextPathType.BRANCH);
-
-		ResultMap.Builder resultMapBuilder = new ResultMap.Builder(configuration, id, type, resultMappings, autoMapping);
-		if (extend != null) {
-			if (!configuration.hasResultMap(extend)) {
-				throw new IncompleteElementException("Could not find a parent resultmap with id '" + extend + "'");
-			}
-			ResultMap resultMap = configuration.getResultMap(extend);
-			List<ResultMapping> extendedResultMappings = new ArrayList<ResultMapping>(resultMap.getResultMappings());
-			extendedResultMappings.removeAll(resultMappings);
-			// Remove parent constructor if this resultMap declares a constructor.
-			boolean declaresConstructor = false;
-			for (ResultMapping resultMapping : resultMappings) {
-				if (resultMapping.getFlags().contains(ResultFlag.CONSTRUCTOR)) {
-					declaresConstructor = true;
-					break;
-				}
-			}
-			if (declaresConstructor) {
-				Iterator<ResultMapping> extendedResultMappingsIter = extendedResultMappings.iterator();
-				while (extendedResultMappingsIter.hasNext()) {
-					if (extendedResultMappingsIter.next().getFlags().contains(ResultFlag.CONSTRUCTOR)) {
-						extendedResultMappingsIter.remove();
-					}
-				}
-			}
-			resultMappings.addAll(extendedResultMappings);
-		}
-		resultMapBuilder.discriminator(discriminator);
-		ResultMap resultMap = resultMapBuilder.build();
-		configuration.addResultMap(resultMap);
-		return resultMap;
 	}
 
 	public ResponseBranch addResponseBranch(String action, String method, JsonSource jsonSource, Class<?> parameterType, LanguageDriver lang) {

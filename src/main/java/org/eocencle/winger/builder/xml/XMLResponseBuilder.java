@@ -17,7 +17,7 @@ public class XMLResponseBuilder extends BaseBuilder {
 	private XPathParser parser;
 	private ResponseBuilderAssistant builderAssistant;
 	private Map<String, XNode> jsonFragments;
-	private String resource;
+	protected String resource;
 
 	@Deprecated
 	public XMLResponseBuilder(Reader reader, Configuration configuration, String resource, Map<String, XNode> jsonFragments, String contextPath) {

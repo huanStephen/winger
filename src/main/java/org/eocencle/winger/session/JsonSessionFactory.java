@@ -10,6 +10,8 @@ import org.eocencle.winger.exceptions.ExceptionFactory;
 import org.eocencle.winger.executor.ErrorContext;
 
 public class JsonSessionFactory {
+	private XMLConfigBuilder parser;
+	
 	public JsonSession build(Reader reader) {
 		return build(reader, null, null);
 	}
@@ -52,7 +54,7 @@ public class JsonSessionFactory {
 
 	public JsonSession build(InputStream inputStream, String environment, Properties properties) {
 		try {
-			XMLConfigBuilder parser = new XMLConfigBuilder(inputStream, environment, properties);
+			this.parser = new XMLConfigBuilder(inputStream, environment, properties);
 			return build(parser.parse());
 		} catch (Exception e) {
 			throw ExceptionFactory.wrapException("Error building SqlSession.", e);
@@ -68,5 +70,9 @@ public class JsonSessionFactory {
 		
 	public JsonSession build(Configuration config) {
 		return new DefaultJsonSession(config);
+	}
+	
+	public XMLConfigBuilder getXMLConfigBuilder() {
+		return this.parser;
 	}
 }

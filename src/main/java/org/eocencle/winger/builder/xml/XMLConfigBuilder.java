@@ -1,5 +1,6 @@
 package org.eocencle.winger.builder.xml;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.util.Properties;
@@ -15,6 +16,7 @@ import org.eocencle.winger.session.Configuration;
 public class XMLConfigBuilder extends BaseBuilder {
 	private boolean parsed;
 	private XPathParser parser;
+	private XMLResponseRebuilder responseRebuilder;
 
 	public XMLConfigBuilder(Reader reader) {
 		this(reader, null, null);
@@ -46,6 +48,7 @@ public class XMLConfigBuilder extends BaseBuilder {
 		this.configuration.setVariables(props);
 		this.parsed = false;
 		this.parser = parser;
+		this.responseRebuilder = new XMLResponseRebuilder(this.configuration);
 	}
 
 	public Configuration parse() {
@@ -77,6 +80,31 @@ public class XMLConfigBuilder extends BaseBuilder {
 				} else {
 					throw new BuilderException("A response element may only specify a resource.");
 				}
+			}
+		}
+	}
+	
+	public XMLResponseRebuilder getXMLResponseRebuilder() {
+		return this.responseRebuilder;
+	}
+	
+	public static class XMLResponseRebuilder {
+		
+		private Configuration configuration;
+		
+		private XMLResponseRebuilder(Configuration configuration) {
+			this.configuration = configuration;
+		}
+		
+		public void parse(String xmlPath) throws IOException {
+			if (null == xmlPath || xmlPath.isEmpty()) {
+				throw new BuilderException("XmlPath is empty.");
+			}
+			if (this.configuration.isResourceLoaded(xmlPath)) {
+				this.configuration.removeResourceLoaded(xmlPath);
+				InputStream is = Resources.getResourceAsStream(xmlPath);
+				XMLResponseBuilder responseParser = new XMLResponseBuilder(is, this.configuration, xmlPath, this.configuration.getJsonFragments());
+				responseParser.parse();
 			}
 		}
 	}
