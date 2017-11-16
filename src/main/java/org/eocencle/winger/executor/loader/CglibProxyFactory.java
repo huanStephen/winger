@@ -12,6 +12,7 @@ import org.eocencle.winger.logging.Log;
 import org.eocencle.winger.logging.LogFactory;
 import org.eocencle.winger.reflection.ExceptionUtil;
 import org.eocencle.winger.reflection.factory.ObjectFactory;
+import org.eocencle.winger.reflection.property.PropertyNamer;
 import org.eocencle.winger.session.Configuration;
 
 public final class CglibProxyFactory implements ProxyFactory {

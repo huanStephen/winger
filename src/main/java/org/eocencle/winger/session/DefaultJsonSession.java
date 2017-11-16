@@ -12,7 +12,6 @@ public class DefaultJsonSession implements JsonSession {
 		this.configuration = configuration;
 	}
 	
-	@Override
 	public String request(String action, Map<String, Object> params) {
 		ResponseBranch branch = this.configuration.getResponseBranch(action);
 		return branch.getBoundJson(params).getJson();
