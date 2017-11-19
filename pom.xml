@@ -75,5 +75,17 @@
 			<version>3.1.0</version>
 			<scope>provided</scope>
 		</dependency>
+		
+		<!-- <dependency>
+			<groupId>tomcat</groupId>
+			<artifactId>jasper-compiler</artifactId>
+			<version>5.5.23</version>
+		</dependency> -->
+		
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>jasper</artifactId>
+			<version>6.0.29</version>
+		</dependency>
 	</dependencies>
 </project>

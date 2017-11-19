@@ -41,12 +41,8 @@ public class Test {
 	}
 	
 	public static void testJetty() {
-		JettyServer jettyServer = new JettyServer();
-		jettyServer.setContextPath("/winger");
-		jettyServer.setResourceBase("E:\\mine\\winger\\winger\\webRoot");
-		jettyServer.setWebXmlPath("E:\\mine\\winger\\winger\\webRoot\\WEB-INF\\web.xml");
+		JettyServer jettyServer = new JettyServer("/winger", "C:\\Users\\dell\\Desktop\\winger\\winger\\webRoot");
 		
-		jettyServer.init();
 		jettyServer.startServer();
 	}
 	

@@ -1,10 +1,8 @@
 package org.eocencle.winger.server;
 
-import org.eclipse.jetty.server.Server;
-
 public class ServerThread extends Thread {
 	
-	private volatile Server server;
+	private volatile JettyServer server;
 	
 	public void stopServer() {
 		try {
@@ -19,16 +17,8 @@ public class ServerThread extends Thread {
 
 	@Override
 	public void run() {
-		try {
-			server = new Server(8088);
-			server.setHandler(new HelloWorld());
-			server.start();
-			server.join();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} 
+		this.server = new JettyServer("/winger", "C:\\Users\\dell\\Desktop\\winger\\winger\\webRoot");
+		this.server.startServer();
 	}
 
 }

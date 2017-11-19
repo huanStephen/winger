@@ -20,6 +20,7 @@ public class Resources {
 	private static Charset charset;
 
 	Resources() {
+		
 	}
 
 	/*
@@ -131,9 +132,9 @@ public class Resources {
 	public static Reader getResourceAsReader(String resource) throws IOException {
 		Reader reader;
 		if (charset == null) {
-		reader = new InputStreamReader(getResourceAsStream(resource));
+			reader = new InputStreamReader(getResourceAsStream(resource));
 		} else {
-		reader = new InputStreamReader(getResourceAsStream(resource), charset);
+			reader = new InputStreamReader(getResourceAsStream(resource), charset);
 		}
 		return reader;
 	}
@@ -149,9 +150,9 @@ public class Resources {
 	public static Reader getResourceAsReader(ClassLoader loader, String resource) throws IOException {
 		Reader reader;
 		if (charset == null) {
-		reader = new InputStreamReader(getResourceAsStream(loader, resource));
+			reader = new InputStreamReader(getResourceAsStream(loader, resource));
 		} else {
-		reader = new InputStreamReader(getResourceAsStream(loader, resource), charset);
+			reader = new InputStreamReader(getResourceAsStream(loader, resource), charset);
 		}
 		return reader;
 	}
@@ -202,9 +203,9 @@ public class Resources {
 	public static Reader getUrlAsReader(String urlString) throws IOException {
 		Reader reader;
 		if (charset == null) {
-		reader = new InputStreamReader(getUrlAsStream(urlString));
+			reader = new InputStreamReader(getUrlAsStream(urlString));
 		} else {
-		reader = new InputStreamReader(getUrlAsStream(urlString), charset);
+			reader = new InputStreamReader(getUrlAsStream(urlString), charset);
 		}
 		return reader;
 	}
