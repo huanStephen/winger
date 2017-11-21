@@ -3,6 +3,8 @@ package org.eocencle.winger.gateway;
 import java.io.PrintWriter;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,7 +32,12 @@ public class ApiGatewayHandler {
 	}
 
 	public void handle(HttpServletRequest request, HttpServletResponse response) {
-		String params = request.getParameter("params");
+		Map<String, Object> params = new HashMap<String, Object>();
+		Enumeration enu = request.getParameterNames();
+		while (enu.hasMoreElements()) {
+			String paraName = (String)enu.nextElement();
+			params.put(paraName, request.getParameter(paraName));
+		}
 		
 		Object result;
 		ApiRunnable apiRun = null;
@@ -53,25 +60,20 @@ public class ApiGatewayHandler {
 	}
 	
 	private ApiRunnable sysParamsVaildate(HttpServletRequest request) throws Exception {
-		String apiName = request.getParameter("method");
-		String json = request.getParameter("params");
+		String uri = request.getRequestURI();
+		uri = uri.substring(1);
+		String apiName = uri.substring(uri.indexOf("/"));
 		
 		ApiRunnable api;
 		if (null == apiName || "".equals(apiName.trim())) {
 			throw new Exception("调用失败：参数'method'为空！");
-		} else if (null == json) {
-			throw new Exception("调用失败：参数'params'为空！");
 		} else if (null == (api = this.apiStore.findApiRunnable(apiName))) {
 			throw new Exception("调用失败：指定API不存在，API：" + apiName + "！");
 		}
 		return api;
 	}
 	
-	private Object[] buildParams(ApiRunnable apiRunnable, String paramsJson, HttpServletRequest request, HttpServletResponse response) throws Exception {
-		Map<String, Object> map = null;
-		
-		Gson gson = new Gson();
-		map = gson.fromJson(paramsJson, Map.class);
+	private Object[] buildParams(ApiRunnable apiRunnable, Map<String, Object> map, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		
 		Method method = apiRunnable.getTargetMethod();
 		List<String> paramsNames = Arrays.asList(this.parameterUtil.getParameterNames(method));
