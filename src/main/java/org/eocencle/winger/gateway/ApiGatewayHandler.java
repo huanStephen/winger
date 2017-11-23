@@ -10,6 +10,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.eocencle.winger.gateway.ApiStore.ApiRunnable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,6 +90,10 @@ public class ApiGatewayHandler {
 		for (int i = 0; i < paramTypes.length; i ++) {
 			if (paramTypes[i].isAssignableFrom(HttpServletRequest.class)) {
 				args[i] = request;
+			} else if (paramTypes[i].isAssignableFrom(HttpSession.class)) {
+				args[i] = request.getSession();
+			} else if (paramTypes[i].isAssignableFrom(HttpServletResponse.class)) {
+				args[i] = response;
 			} else if (map.containsKey(paramsNames.get(i))) {
 				args[i] = this.convertJsonToBean(map.get(paramsNames.get(i)), paramTypes[i]);
 			}
