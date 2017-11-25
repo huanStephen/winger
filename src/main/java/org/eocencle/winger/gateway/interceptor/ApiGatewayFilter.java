@@ -14,15 +14,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eocencle.winger.gateway.ApiGatewayHandler;
+import org.eocencle.winger.gateway.HttpHandler;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
 
 public class ApiGatewayFilter implements Filter {
 
-	private ApplicationContext applicationContext;
+private ApplicationContext applicationContext;
 	
-	private ApiGatewayHandler apiHander;
+	private HttpHandler httpHandler;
 	
 	private Boolean vague = false;
 	
@@ -47,14 +47,14 @@ public class ApiGatewayFilter implements Filter {
 			}
 		}
 		
-		this.apiHander.handle(request, response);
+		this.httpHandler.handle(request, response);
 	}
 
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
 		this.applicationContext = (ApplicationContext) filterConfig.getServletContext()
 			.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
-		this.apiHander = this.applicationContext.getBean(ApiGatewayHandler.class);
+		this.httpHandler = this.applicationContext.getBean(HttpHandler.class);
 		
 		String ignore = filterConfig.getInitParameter("suffix");
 		if (StringUtils.isNotBlank(ignore)) {

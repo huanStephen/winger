@@ -7,10 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
-@Component
 public class ApiStore {
 
 	private ApplicationContext applicationContext;

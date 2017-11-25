@@ -1,10 +1,8 @@
 package org.eocencle.winger.gateway;
 
-import java.io.PrintWriter;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,88 +10,71 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang3.StringUtils;
+import org.eocencle.winger.exceptions.ProcessException;
 import org.eocencle.winger.gateway.ApiStore.ApiRunnable;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.core.ParameterNameDiscoverer;
-import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 
-@Component
-public class ApiGatewayHandler {
+public class ApiProcessHandler implements ProcessHandler {
 	
-	@Autowired
 	private ApiStore apiStore;
 	
 	private ParameterNameDiscoverer parameterUtil;
 	
-	public ApiGatewayHandler() {
+	private Gson gson;
+	
+	public ApiProcessHandler(ApiStore apiStore) {
+		this.apiStore = apiStore;
 		this.parameterUtil = new LocalVariableTableParameterNameDiscoverer();
+		this.gson = new Gson();
 	}
 
-	public void handle(HttpServletRequest request, HttpServletResponse response) {
-		Map<String, Object> params = new HashMap<String, Object>();
-		Enumeration enu = request.getParameterNames();
-		while (enu.hasMoreElements()) {
-			String paraName = (String)enu.nextElement();
-			params.put(paraName, request.getParameter(paraName));
+	@Override
+	public Object handle(String apiName, Map<String, Object> params) {
+		if (StringUtils.isBlank(apiName)) {
+			throw new ProcessException("调用失败：参数'method'为空！");
 		}
-		
-		Object result;
-		ApiRunnable apiRun = null;
-		
+		ApiRunnable api = null;
+		if (null == (api = this.apiStore.findApiRunnable(apiName))) {
+			throw new ProcessException("调用失败：指定API不存在，API：" + apiName + "！");
+		}
 		try {
-			apiRun = this.sysParamsVaildate(request);
-			Object[] args = this.buildParams(apiRun, params, request, response);
-			result = apiRun.run(args);
-			
-			response.setCharacterEncoding("UTF-8");
-			response.setContentType("application/json; charset=utf-8");
-			PrintWriter out = null;
-			
-			out = response.getWriter();
-			out.write(new Gson().toJson(result));
+			return api.run(this.buildParams(api, params));
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+		return null;
 	}
 	
-	private ApiRunnable sysParamsVaildate(HttpServletRequest request) throws Exception {
-		String uri = request.getRequestURI();
-		uri = uri.substring(1);
-		String apiName = uri.substring(uri.indexOf("/"));
-		
-		ApiRunnable api;
-		if (null == apiName || "".equals(apiName.trim())) {
-			throw new Exception("调用失败：参数'method'为空！");
-		} else if (null == (api = this.apiStore.findApiRunnable(apiName))) {
-			throw new Exception("调用失败：指定API不存在，API：" + apiName + "！");
-		}
-		return api;
-	}
-	
-	private Object[] buildParams(ApiRunnable apiRunnable, Map<String, Object> map, HttpServletRequest request, HttpServletResponse response) throws Exception {
+	private Object[] buildParams(ApiRunnable apiRunnable, Map<String, Object> map) throws Exception {
 		
 		Method method = apiRunnable.getTargetMethod();
 		List<String> paramsNames = Arrays.asList(this.parameterUtil.getParameterNames(method));
 		Class<?>[] paramTypes = method.getParameterTypes();
 		
-		for (Map.Entry<String, Object> m : map.entrySet()) {
-			if (!paramsNames.contains(m.getKey())) {
-				throw new Exception("调用失败：接口不存在'" + m.getKey() + "'");
+		for (String param : paramsNames) {
+			if (null == map.get(param)) {
+				throw new ProcessException("调用失败：接口不存在'" + param + "'");
 			}
 		}
 		
 		Object[] args = new Object[paramTypes.length];
 		for (int i = 0; i < paramTypes.length; i ++) {
 			if (paramTypes[i].isAssignableFrom(HttpServletRequest.class)) {
-				args[i] = request;
+				args[i] = map.get("_request");
 			} else if (paramTypes[i].isAssignableFrom(HttpSession.class)) {
-				args[i] = request.getSession();
+				args[i] = map.get("_session");
 			} else if (paramTypes[i].isAssignableFrom(HttpServletResponse.class)) {
-				args[i] = response;
+				args[i] = map.get("_response");
 			} else if (map.containsKey(paramsNames.get(i))) {
 				args[i] = this.convertJsonToBean(map.get(paramsNames.get(i)), paramTypes[i]);
 			}
@@ -132,7 +113,6 @@ public class ApiGatewayHandler {
 			return Character.valueOf(json.charAt(0));
 		}
 
-		return new Gson().fromJson(jsonObj.toString(), paramType);
+		return this.gson.fromJson(jsonObj.toString(), paramType);
 	}
-	
 }

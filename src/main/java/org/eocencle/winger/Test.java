@@ -34,6 +34,8 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import com.google.gson.Gson;
+
 public class Test {
 
 	public static void main(String[] args) throws IOException {
@@ -58,7 +60,12 @@ public class Test {
 		list.add(3);
 		list.add(4);
 		params.put("idx", list);
-		System.out.println(session.request("/winger/item/addItem", params));
+		String str = session.request("/winger/item/addItem", params);
+		System.out.println(str);
+		Gson gson = new Gson();
+		Map<String, Object> json = gson.fromJson(str, Map.class);
+		Map<String, Object> j = (Map<String, Object>)json.get("data");
+		System.out.println(j.get("speak0"));
 	}
 	
 	public static void testOgnl() {

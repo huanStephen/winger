@@ -16,11 +16,12 @@ public final class HttpHandler {
 	
 	private Gson gson = new Gson();
 	
-	private List<Interceptor> interceptors = new ArrayList<Interceptor>();
+	private List<Interceptor> interceptors;
 	
 	private ProcessHandler handler;
 	
 	public HttpHandler(ProcessHandler handler) {
+		this.interceptors = new ArrayList<Interceptor>();
 		this.handler = handler;
 	}
 
