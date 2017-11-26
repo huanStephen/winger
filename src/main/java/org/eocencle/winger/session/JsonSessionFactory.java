@@ -8,6 +8,7 @@ import java.util.Properties;
 import org.eocencle.winger.builder.xml.XMLConfigBuilder;
 import org.eocencle.winger.exceptions.ExceptionFactory;
 import org.eocencle.winger.executor.ErrorContext;
+import org.springframework.context.ApplicationContext;
 
 public class JsonSessionFactory {
 	private XMLConfigBuilder parser;
@@ -16,17 +17,17 @@ public class JsonSessionFactory {
 		return build(reader, null, null);
 	}
 
-	public JsonSession build(Reader reader, String environment) {
-		return build(reader, environment, null);
+	public JsonSession build(Reader reader, ApplicationContext applicationContext) {
+		return build(reader, applicationContext, null);
 	}
 
 	public JsonSession build(Reader reader, Properties properties) {
 		return build(reader, null, properties);
 	}
 
-	public JsonSession build(Reader reader, String environment, Properties properties) {
+	public JsonSession build(Reader reader, ApplicationContext applicationContext, Properties properties) {
 		try {
-			XMLConfigBuilder parser = new XMLConfigBuilder(reader, environment, properties);
+			XMLConfigBuilder parser = new XMLConfigBuilder(reader, applicationContext, properties);
 			return build(parser.parse());
 		} catch (Exception e) {
 			throw ExceptionFactory.wrapException("Error building SqlSession.", e);
@@ -44,17 +45,17 @@ public class JsonSessionFactory {
 		return build(inputStream, null, null);
 	}
 
-	public JsonSession build(InputStream inputStream, String environment) {
-		return build(inputStream, environment, null);
+	public JsonSession build(InputStream inputStream, ApplicationContext applicationContext) {
+		return build(inputStream, applicationContext, null);
 	}
 
 	public JsonSession build(InputStream inputStream, Properties properties) {
 		return build(inputStream, null, properties);
 	}
 
-	public JsonSession build(InputStream inputStream, String environment, Properties properties) {
+	public JsonSession build(InputStream inputStream, ApplicationContext applicationContext, Properties properties) {
 		try {
-			this.parser = new XMLConfigBuilder(inputStream, environment, properties);
+			this.parser = new XMLConfigBuilder(inputStream, applicationContext, properties);
 			return build(parser.parse());
 		} catch (Exception e) {
 			throw ExceptionFactory.wrapException("Error building SqlSession.", e);

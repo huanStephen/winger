@@ -17,13 +17,13 @@ public class XMLLanguageDriver implements LanguageDriver {
 		return new DefaultParameterHandler(responseBranch, parameterObject, boundJson);
 	}
 
-	public JsonSource createJsonSource(Configuration configuration, XNode script, Class<?> parameterType) {
+	public JsonSource createJsonSource(Configuration configuration, XNode script) {
 		XMLScriptBuilder builder = new XMLScriptBuilder(configuration, script);
 		return builder.parseScriptNode();
 	}
 
-	public JsonSource createJsonSource(Configuration configuration, String script, Class<?> parameterType) {
-		if (script.startsWith("<script>")) { // issue #3
+	public JsonSource createJsonSource(Configuration configuration, String script) {
+		if (script.startsWith("<script>")) {
 			XMLScriptBuilder builder = new XMLScriptBuilder(configuration, script);
 			return builder.parseScriptNode();
 		} else {

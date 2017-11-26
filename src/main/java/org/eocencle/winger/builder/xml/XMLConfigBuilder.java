@@ -7,48 +7,52 @@ import java.util.Properties;
 
 import org.eocencle.winger.builder.BaseBuilder;
 import org.eocencle.winger.builder.BuilderException;
+import org.eocencle.winger.builder.annotation.ResponseAnnotationBuilder;
 import org.eocencle.winger.executor.ErrorContext;
 import org.eocencle.winger.io.Resources;
 import org.eocencle.winger.parsing.XNode;
 import org.eocencle.winger.parsing.XPathParser;
 import org.eocencle.winger.session.Configuration;
+import org.springframework.context.ApplicationContext;
 
 public class XMLConfigBuilder extends BaseBuilder {
 	private boolean parsed;
 	private XPathParser parser;
 	private XMLResponseRebuilder responseRebuilder;
+	private ApplicationContext applicationContext;
 
 	public XMLConfigBuilder(Reader reader) {
 		this(reader, null, null);
 	}
 
-	public XMLConfigBuilder(Reader reader, String environment) {
-		this(reader, environment, null);
+	public XMLConfigBuilder(Reader reader, ApplicationContext applicationContext) {
+		this(reader, applicationContext, null);
 	}
 
-	public XMLConfigBuilder(Reader reader, String environment, Properties props) {
-		this(new XPathParser(reader, true, props, new XMLMapperEntityResolver()), props);
+	public XMLConfigBuilder(Reader reader, ApplicationContext applicationContext, Properties props) {
+		this(new XPathParser(reader, true, props, new XMLMapperEntityResolver()), applicationContext, props);
 	}
 
 	public XMLConfigBuilder(InputStream inputStream) {
 		this(inputStream, null, null);
 	}
 
-	public XMLConfigBuilder(InputStream inputStream, String environment) {
-		this(inputStream, environment, null);
+	public XMLConfigBuilder(InputStream inputStream, ApplicationContext applicationContext) {
+		this(inputStream, applicationContext, null);
 	}
 
-	public XMLConfigBuilder(InputStream inputStream, String environment, Properties props) {
-		this(new XPathParser(inputStream, true, props, new XMLMapperEntityResolver()), props);
+	public XMLConfigBuilder(InputStream inputStream, ApplicationContext applicationContext, Properties props) {
+		this(new XPathParser(inputStream, true, props, new XMLMapperEntityResolver()), applicationContext, props);
 	}
 
-	private XMLConfigBuilder(XPathParser parser, Properties props) {
+	private XMLConfigBuilder(XPathParser parser, ApplicationContext applicationContext, Properties props) {
 		super(new Configuration());
 		ErrorContext.instance().resource("Response Configuration");
 		this.configuration.setVariables(props);
 		this.parsed = false;
 		this.parser = parser;
 		this.responseRebuilder = new XMLResponseRebuilder(this.configuration);
+		this.applicationContext = applicationContext;
 	}
 
 	public Configuration parse() {
@@ -69,9 +73,18 @@ public class XMLConfigBuilder extends BaseBuilder {
 		}
 	}
 	
-	private void apiResponseElement(XNode parent) throws Exception {
-		if (parent != null) {
-			
+	private void apiResponseElement(XNode node) throws Exception {
+		if (null == this.applicationContext) {
+			throw new BuilderException("ApplicationContext is null.");
+		}
+		if (node != null) {
+			String packet = node.getStringAttribute("resource");
+			if (packet != null) {
+				ResponseAnnotationBuilder responseAnnotationBuilder = new ResponseAnnotationBuilder(this.configuration, packet, this.applicationContext);
+				responseAnnotationBuilder.parse();
+			} else {
+				throw new BuilderException("A apis element may only specify a scan.");
+			}
 		}
 	}
 

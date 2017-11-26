@@ -26,7 +26,7 @@ public class XMLBranchBuilder extends BaseBuilder {
 		includeParser.applyIncludes(this.context.getNode());
 
 		LanguageDriver langDriver = getLanguageDriver(null);
-		JsonSource jsonSource = langDriver.createJsonSource(this.configuration, this.context, null);
+		JsonSource jsonSource = langDriver.createJsonSource(this.configuration, this.context);
 		
 		this.builderAssistant.addResponseBranch(name, RequestType.valueOf(type), jsonSource);
 	}

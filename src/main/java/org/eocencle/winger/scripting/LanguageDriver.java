@@ -11,7 +11,7 @@ public interface LanguageDriver {
 
 	ParameterHandler createParameterHandler(ResponseBranch responseBranch, Object parameterObject, BoundJson boundJson);
 
-	JsonSource createJsonSource(Configuration configuration, XNode script, Class<?> parameterType);
+	JsonSource createJsonSource(Configuration configuration, XNode script);
 
-	JsonSource createJsonSource(Configuration configuration, String script, Class<?> parameterType);
+	JsonSource createJsonSource(Configuration configuration, String script);
 }

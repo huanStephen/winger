@@ -3,7 +3,6 @@ package org.eocencle.winger.scripting.defaults;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eocencle.winger.builder.SqlSourceBuilder;
 import org.eocencle.winger.mapping.BoundJson;
 import org.eocencle.winger.mapping.JsonSource;
 import org.eocencle.winger.session.Configuration;

@@ -1,11 +1,19 @@
 package org.eocencle.winger;
 
+import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.JarURLConnection;
+import java.net.URL;
+import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -40,7 +48,7 @@ public class Test {
 
 	public static void main(String[] args) throws IOException {
 		//testJetty();
-		testWinger();
+		//testWinger();
 	}
 	
 	public static void testJetty() {
