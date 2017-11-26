@@ -2,12 +2,11 @@ package org.eocencle.winger.builder.xml;
 
 import org.eocencle.winger.builder.BaseBuilder;
 import org.eocencle.winger.builder.ResponseBuilderAssistant;
+import org.eocencle.winger.mapping.AbstractResponseBranch.RequestType;
 import org.eocencle.winger.mapping.JsonSource;
 import org.eocencle.winger.parsing.XNode;
 import org.eocencle.winger.scripting.LanguageDriver;
 import org.eocencle.winger.session.Configuration;
-
-import com.sun.javafx.collections.MappingChange.Map;
 
 public class XMLBranchBuilder extends BaseBuilder {
 	private ResponseBuilderAssistant builderAssistant;
@@ -20,8 +19,8 @@ public class XMLBranchBuilder extends BaseBuilder {
 	}
 
 	public void parseBranchNode() {
-		String action = this.context.getStringAttribute("action");
-		String method = this.context.getStringAttribute("method");
+		String name = this.context.getStringAttribute("name");
+		String type = this.context.getStringAttribute("type").toUpperCase();
 
 		XMLIncludeTransformer includeParser = new XMLIncludeTransformer(this.configuration, this.builderAssistant);
 		includeParser.applyIncludes(this.context.getNode());
@@ -29,7 +28,7 @@ public class XMLBranchBuilder extends BaseBuilder {
 		LanguageDriver langDriver = getLanguageDriver(null);
 		JsonSource jsonSource = langDriver.createJsonSource(this.configuration, this.context, null);
 		
-		this.builderAssistant.addResponseBranch(action, method, jsonSource, Map.class, langDriver);
+		this.builderAssistant.addResponseBranch(name, RequestType.valueOf(type), jsonSource);
 	}
 
 	private LanguageDriver getLanguageDriver(String lang) {

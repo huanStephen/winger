@@ -13,6 +13,10 @@ public class BoundJson {
 	private Object parameterObject;
 	private Map<String, Object> additionalParameters;
 	private MetaObject metaParameters;
+	
+	public BoundJson(Configuration configuration, String json) {
+		this(configuration, json, null);
+	}
 
 	public BoundJson(Configuration configuration, String json, Object parameterObject) {
 		this.json = json;

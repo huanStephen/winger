@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!ELEMENT configuration (responses?)>
+<!ELEMENT configuration (apis? | xmls?)>
 
-<!ELEMENT responses (response+)>
+<!ELEMENT apis EMPTY>
+<!ATTLIST apis 
+scan CDATA #IMPLIED
+>
+
+<!ELEMENT xmls (response+)>
 
 <!ELEMENT response EMPTY>
 <!ATTLIST response 

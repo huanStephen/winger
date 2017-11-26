@@ -11,8 +11,8 @@ id CDATA #REQUIRED
 
 <!ELEMENT branch (#PCDATA | include | trim | where | set | foreach | choose | if | bind)*>
 <!ATTLIST branch
-action CDATA #REQUIRED
-method (get | post | put | delete) #IMPLIED width CDATA "get"
+name CDATA #REQUIRED
+type (GET | POST | PUT | DELETE) #IMPLIED width CDATA "GET"
 >
 
 <!-- Dynamic -->

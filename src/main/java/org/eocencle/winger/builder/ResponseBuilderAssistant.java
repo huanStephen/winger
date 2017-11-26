@@ -2,9 +2,10 @@ package org.eocencle.winger.builder;
 
 import org.eocencle.winger.cache.Cache;
 import org.eocencle.winger.executor.ErrorContext;
+import org.eocencle.winger.mapping.AbstractResponseBranch;
+import org.eocencle.winger.mapping.AbstractResponseBranch.RequestType;
 import org.eocencle.winger.mapping.JsonSource;
-import org.eocencle.winger.mapping.ResponseBranch;
-import org.eocencle.winger.scripting.LanguageDriver;
+import org.eocencle.winger.mapping.XmlResponseBranch;
 import org.eocencle.winger.session.Configuration;
 import org.eocencle.winger.type.ContextPathType;
 
@@ -73,17 +74,13 @@ public class ResponseBuilderAssistant extends BaseBuilder {
 		return this.currentContextPath + base;
 	}
 
-	public ResponseBranch addResponseBranch(String action, String method, JsonSource jsonSource, Class<?> parameterType, LanguageDriver lang) {
+	public AbstractResponseBranch addResponseBranch(String name, RequestType type, JsonSource jsonSource) {
 		
 		if (unresolvedCacheRef) throw new IncompleteElementException("Cache-ref not yet resolved");
 		
-		action = this.applyCurrentContextPath(action, false, ContextPathType.BRANCH);
+		name = this.applyCurrentContextPath(name, false, ContextPathType.BRANCH);
 
-		ResponseBranch.Builder branchBuilder = new ResponseBranch.Builder(configuration, action, method, jsonSource);
-		branchBuilder.resource(resource);
-		branchBuilder.lang(lang);
-
-		ResponseBranch branch = branchBuilder.build();
+		XmlResponseBranch branch = new XmlResponseBranch(name, type, configuration, jsonSource);
 		this.configuration.addResponseBranch(branch);
 		return branch;
 	}

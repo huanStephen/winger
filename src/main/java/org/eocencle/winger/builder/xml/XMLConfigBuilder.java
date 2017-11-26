@@ -62,13 +62,20 @@ public class XMLConfigBuilder extends BaseBuilder {
 
 	private void parseConfiguration(XNode root) {
 		try {
-			this.responseElement(root.evalNode("responses"));
+			this.apiResponseElement(root.evalNode("apis"));
+			this.xmlResponseElement(root.evalNode("xmls"));
 		} catch (Exception e) {
 			throw new BuilderException("Error parsing Response Configuration. Cause: " + e, e);
 		}
 	}
+	
+	private void apiResponseElement(XNode parent) throws Exception {
+		if (parent != null) {
+			
+		}
+	}
 
-	private void responseElement(XNode parent) throws Exception {
+	private void xmlResponseElement(XNode parent) throws Exception {
 		if (parent != null) {
 			for (XNode child : parent.getChildren()) {
 				String resource = child.getStringAttribute("resource");

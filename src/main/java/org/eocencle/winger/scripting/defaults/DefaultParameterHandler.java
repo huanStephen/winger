@@ -8,9 +8,9 @@ import org.eocencle.winger.executor.ErrorContext;
 import org.eocencle.winger.executor.ExecutorException;
 import org.eocencle.winger.executor.parameter.ParameterHandler;
 import org.eocencle.winger.mapping.BoundJson;
-import org.eocencle.winger.mapping.MappedStatement;
 import org.eocencle.winger.mapping.ParameterMapping;
 import org.eocencle.winger.mapping.ParameterMode;
+import org.eocencle.winger.mapping.ResponseBranch;
 import org.eocencle.winger.reflection.MetaObject;
 import org.eocencle.winger.session.Configuration;
 import org.eocencle.winger.type.JdbcType;
@@ -20,15 +20,15 @@ import org.eocencle.winger.type.TypeHandlerRegistry;
 public class DefaultParameterHandler implements ParameterHandler {
 	private final TypeHandlerRegistry typeHandlerRegistry;
 
-	private final MappedStatement mappedStatement;
+	private final ResponseBranch responseBranch;
 	private final Object parameterObject;
 	private BoundJson boundJson;
 	private Configuration configuration;
 
-	public DefaultParameterHandler(MappedStatement mappedStatement, Object parameterObject, BoundJson boundJson) {
-		this.mappedStatement = mappedStatement;
-		this.configuration = mappedStatement.getConfiguration();
-		this.typeHandlerRegistry = mappedStatement.getConfiguration().getTypeHandlerRegistry();
+	public DefaultParameterHandler(ResponseBranch responseBranch, Object parameterObject, BoundJson boundJson) {
+		this.responseBranch = responseBranch;
+		this.configuration = responseBranch.getConfiguration();
+		this.typeHandlerRegistry = responseBranch.getConfiguration().getTypeHandlerRegistry();
 		this.parameterObject = parameterObject;
 		this.boundJson = boundJson;
 	}
@@ -38,7 +38,7 @@ public class DefaultParameterHandler implements ParameterHandler {
 	}
 
 	public void setParameters(PreparedStatement ps) throws SQLException {
-		ErrorContext.instance().activity("setting parameters").object(mappedStatement.getParameterMap().getId());
+		//ErrorContext.instance().activity("setting parameters").object(responseBranch.getParameterMap().getId());
 		List<ParameterMapping> parameterMappings = boundJson.getParameterMappings();
 		if (parameterMappings != null) {
 		MetaObject metaObject = parameterObject == null ? null : configuration.newMetaObject(parameterObject);
@@ -58,7 +58,7 @@ public class DefaultParameterHandler implements ParameterHandler {
 			}
 			TypeHandler typeHandler = parameterMapping.getTypeHandler();
 			if (typeHandler == null) {
-				throw new ExecutorException("There was no TypeHandler found for parameter " + propertyName + " of statement " + mappedStatement.getId());
+				//throw new ExecutorException("There was no TypeHandler found for parameter " + propertyName + " of statement " + responseBranch.getId());
 			}
 			JdbcType jdbcType = parameterMapping.getJdbcType();
 			if (value == null && jdbcType == null) jdbcType = configuration.getJdbcTypeForNull();

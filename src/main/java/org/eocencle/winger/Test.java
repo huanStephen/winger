@@ -39,7 +39,8 @@ import com.google.gson.Gson;
 public class Test {
 
 	public static void main(String[] args) throws IOException {
-		testJetty();
+		//testJetty();
+		testWinger();
 	}
 	
 	public static void testJetty() {

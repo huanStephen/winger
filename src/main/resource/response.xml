@@ -7,7 +7,7 @@
 	<json id="result2">
 		"speak${index - 1}" : "you are welcome ${value} ${index}"
 	</json>
-	<branch action="/item/addItem" method="post">
+	<branch name="/item/addItem" type="post">
 		{
 			"meta" : {
 				"code" : 1,

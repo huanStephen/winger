@@ -12,16 +12,11 @@ import java.util.Set;
 import org.eocencle.winger.binding.ResponseRegistry;
 import org.eocencle.winger.builder.CacheRefResolver;
 import org.eocencle.winger.builder.MethodResolver;
-import org.eocencle.winger.builder.ResultMapResolver;
 import org.eocencle.winger.builder.xml.XMLBranchBuilder;
-import org.eocencle.winger.builder.xml.XMLStatementBuilder;
-import org.eocencle.winger.executor.parameter.ParameterHandler;
 import org.eocencle.winger.logging.Log;
 import org.eocencle.winger.logging.LogFactory;
-import org.eocencle.winger.mapping.BoundJson;
+import org.eocencle.winger.mapping.AbstractResponseBranch;
 import org.eocencle.winger.mapping.Environment;
-import org.eocencle.winger.mapping.MappedStatement;
-import org.eocencle.winger.mapping.ResponseBranch;
 import org.eocencle.winger.parsing.XNode;
 import org.eocencle.winger.plugin.Interceptor;
 import org.eocencle.winger.plugin.InterceptorChain;
@@ -54,15 +49,13 @@ public class Configuration {
 	protected final TypeAliasRegistry typeAliasRegistry = new TypeAliasRegistry();
 	protected final LanguageDriverRegistry languageRegistry = new LanguageDriverRegistry();
 
-	protected final Map<String, ResponseBranch> responseBranchs = new StrictMap<ResponseBranch>("Response Branchs collection");
+	protected final Map<String, AbstractResponseBranch> responseBranchs = new StrictMap<AbstractResponseBranch>("Response Branchs collection");
 
 	protected final Set<String> loadedResources = new HashSet<String>();
 	protected final Map<String, XNode> jsonFragments = new StrictMap<XNode>("XML fragments parsed from previous responses");
 
-	protected final Collection<XMLStatementBuilder> incompleteStatements = new LinkedList<XMLStatementBuilder>();
 	protected final Collection<XMLBranchBuilder> incompleteBranchs = new LinkedList<XMLBranchBuilder>();
 	protected final Collection<CacheRefResolver> incompleteCacheRefs = new LinkedList<CacheRefResolver>();
-	protected final Collection<ResultMapResolver> incompleteResultMaps = new LinkedList<ResultMapResolver>();
 	protected final Collection<MethodResolver> incompleteMethods = new LinkedList<MethodResolver>();
 
 	/*
@@ -206,23 +199,9 @@ public class Configuration {
 	public MetaObject newMetaObject(Object object) {
 		return MetaObject.forObject(object, objectFactory, objectWrapperFactory);
 	}
-
-	public ParameterHandler newParameterHandler(MappedStatement mappedStatement, Object parameterObject, BoundJson boundJson) {
-		ParameterHandler parameterHandler = mappedStatement.getLang().createParameterHandler(mappedStatement, parameterObject, boundJson);
-		parameterHandler = (ParameterHandler) interceptorChain.pluginAll(parameterHandler);
-		return parameterHandler;
-	}
 	
-	public void addResponseBranch(ResponseBranch rb) {
-		this.responseBranchs.put(rb.getAction(), rb);
-	}
-
-	public Collection<XMLStatementBuilder> getIncompleteStatements() {
-		return incompleteStatements;
-	}
-
-	public void addIncompleteStatement(XMLStatementBuilder incompleteStatement) {
-		incompleteStatements.add(incompleteStatement);
+	public void addResponseBranch(AbstractResponseBranch arb) {
+		this.responseBranchs.put(arb.getName(), arb);
 	}
 	
 	public void addIncompleteBranch(XMLBranchBuilder incompleteBranch) {
@@ -237,14 +216,6 @@ public class Configuration {
 		incompleteCacheRefs.add(incompleteCacheRef);
 	}
 
-	public Collection<ResultMapResolver> getIncompleteResultMaps() {
-		return incompleteResultMaps;
-	}
-
-	public void addIncompleteResultMap(ResultMapResolver resultMapResolver) {
-		incompleteResultMaps.add(resultMapResolver);
-	}
-
 	public void addIncompleteMethod(MethodResolver builder) {
 		incompleteMethods.add(builder);
 	}
@@ -253,7 +224,7 @@ public class Configuration {
 		return incompleteMethods;
 	}
 	
-	public ResponseBranch getResponseBranch(String action) {
+	public AbstractResponseBranch getResponseBranch(String action) {
 		return this.responseBranchs.get(action);
 	}
 	
@@ -267,32 +238,6 @@ public class Configuration {
 
 	public void addCacheRef(String namespace, String referencedNamespace) {
 		cacheRefMap.put(namespace, referencedNamespace);
-	}
-
-	/*
-	 * Parses all the unprocessed statement nodes in the cache. It is recommended
-	 * to call this method once all the mappers are added as it provides fail-fast
-	 * statement validation.
-	 */
-	protected void buildAllStatements() {
-		if (!incompleteResultMaps.isEmpty()) {
-		synchronized (incompleteResultMaps) {
-			// This always throws a BuilderException.
-			incompleteResultMaps.iterator().next().resolve();
-		}
-		}
-		if (!incompleteCacheRefs.isEmpty()) {
-		synchronized (incompleteCacheRefs) {
-			// This always throws a BuilderException.
-			incompleteCacheRefs.iterator().next().resolveCacheRef();
-		}
-		}
-		if (!incompleteStatements.isEmpty()) {
-		synchronized (incompleteStatements) {
-			// This always throws a BuilderException.
-			incompleteStatements.iterator().next().parseStatementNode();
-		}
-		}
 	}
 
 	/*
