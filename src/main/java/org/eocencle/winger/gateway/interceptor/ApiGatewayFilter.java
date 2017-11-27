@@ -20,7 +20,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 public class ApiGatewayFilter implements Filter {
 
-private ApplicationContext applicationContext;
+	private ApplicationContext applicationContext;
 	
 	private HttpHandler httpHandler;
 	

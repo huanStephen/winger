@@ -17,7 +17,7 @@ public class ServerThread extends Thread {
 
 	@Override
 	public void run() {
-		this.server = new JettyServer("/winger", "C:\\Users\\dell\\Desktop\\winger\\winger\\webRoot");
+		this.server = new JettyServer("/winger", "C:\\Users\\dell\\Desktop\\123");
 		this.server.startServer();
 	}
 

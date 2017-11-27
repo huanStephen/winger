@@ -10,6 +10,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.eocencle.winger.session.JsonSession;
+
 import com.google.gson.Gson;
 
 public final class HttpHandler {
@@ -18,11 +20,11 @@ public final class HttpHandler {
 	
 	private List<Interceptor> interceptors;
 	
-	private ProcessHandler handler;
+	private JsonSession jsonSession;
 	
-	public HttpHandler(ProcessHandler handler) {
+	public HttpHandler(JsonSession jsonSession) {
 		this.interceptors = new ArrayList<Interceptor>();
-		this.handler = handler;
+		this.jsonSession = jsonSession;
 	}
 
 	public void handle(HttpServletRequest request, HttpServletResponse response) {
@@ -30,25 +32,28 @@ public final class HttpHandler {
 		for (int i = 0; i < this.interceptors.size(); i ++) {
 			this.interceptors.get(i).before(params, request);
 		}
-		Object obj = this.handler.handle(this.getMethodName(request), params);
+		Object obj = this.run(request.getRequestURI(), params);
 		for (int i = this.interceptors.size() - 1; i >= 0; i --) {
 			this.interceptors.get(i).after(obj, response);
 		}
 		this.returnJson(obj, response);
 	}
 	
-	private String getMethodName(HttpServletRequest request) {
-		String uri = request.getRequestURI();
-		uri = uri.substring(1);
-		return uri.substring(uri.indexOf("/"));
+	private Object run(String name, Map<String, Object> params) {
+		return this.jsonSession.request(name, params);
 	}
 	
 	private Map<String, Object> paramsWrapper(HttpServletRequest request, HttpServletResponse response) {
 		Map<String, Object> params = new HashMap<String, Object>();
 		Enumeration enu = request.getParameterNames();
 		while (enu.hasMoreElements()) {
-			String paraName = (String)enu.nextElement();
-			params.put(paraName, request.getParameter(paraName));
+			String paramName = (String)enu.nextElement();
+			if (-1 == paramName.indexOf("[]")) {
+				params.put(paramName, request.getParameter(paramName));
+			} else {
+				paramName = paramName.replace("[]", "");
+				params.put(paramName, request.getParameter(paramName));
+			}
 		}
 		params.put("_request", request);
 		params.put("_session", request.getSession());

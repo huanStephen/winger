@@ -48,7 +48,7 @@ public class Test {
 
 	public static void main(String[] args) throws IOException {
 		//testJetty();
-		//testWinger();
+		testWinger();
 	}
 	
 	public static void testJetty() {
