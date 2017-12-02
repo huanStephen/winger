@@ -12,7 +12,9 @@
 			"meta" : {
 				"code" : 1,
 				"msg" : "请求成功！",
-				"data" : "${value}"
+				"data" : "${value}",
+				"test" : "${test.address}",
+				"success" : ${result}
 			},
 			"data" : {
 				<if test="1 == id">

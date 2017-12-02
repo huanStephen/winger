@@ -1,19 +1,11 @@
 package org.eocencle.winger;
 
-import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.JarURLConnection;
-import java.net.URL;
-import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -68,7 +60,8 @@ public class Test {
 		list.add(2);
 		list.add(3);
 		list.add(4);
-		params.put("idx", list);
+		int[] intArray = { 1, 2, 3, 4, 5 };
+		params.put("idx", intArray);
 		String str = session.request("/winger/item/addItem", params);
 		System.out.println(str);
 		Gson gson = new Gson();

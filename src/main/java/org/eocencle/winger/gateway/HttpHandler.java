@@ -2,7 +2,6 @@ package org.eocencle.winger.gateway;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,12 +10,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eocencle.winger.session.JsonSession;
-
-import com.google.gson.Gson;
+import org.eocencle.winger.util.JsonUtil;
 
 public final class HttpHandler {
-	
-	private Gson gson = new Gson();
 	
 	private List<Interceptor> interceptors;
 	
@@ -44,16 +40,10 @@ public final class HttpHandler {
 	}
 	
 	private Map<String, Object> paramsWrapper(HttpServletRequest request, HttpServletResponse response) {
-		Map<String, Object> params = new HashMap<String, Object>();
-		Enumeration enu = request.getParameterNames();
-		while (enu.hasMoreElements()) {
-			String paramName = (String)enu.nextElement();
-			if (-1 == paramName.indexOf("[]")) {
-				params.put(paramName, request.getParameter(paramName));
-			} else {
-				paramName = paramName.replace("[]", "");
-				params.put(paramName, request.getParameter(paramName));
-			}
+		Map<String, Object> params = new HashMap<>();
+		for (String key : request.getParameterMap().keySet()) {
+			params = JsonUtil.toMap(key);
+			break;
 		}
 		params.put("_request", request);
 		params.put("_session", request.getSession());
@@ -62,16 +52,10 @@ public final class HttpHandler {
 	}
 	
 	private void returnJson(Object obj, HttpServletResponse response) {
-		String json;
-		if (obj instanceof String) {
-			json = obj.toString();
-		} else {
-			json = this.gson.toJson(obj);
-		}
 		try {
 			response.setCharacterEncoding("UTF-8");
 			response.setContentType("application/json; charset=utf-8");
-			response.getWriter().write(json);
+			response.getWriter().write(JsonUtil.parseString(obj));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
