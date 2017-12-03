@@ -18,11 +18,14 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.eocencle.winger.builder.xml.XMLMapperEntityResolver;
+import org.eocencle.winger.gateway.test.UserService;
 import org.eocencle.winger.io.Resources;
 import org.eocencle.winger.scripting.xmltags.OgnlCache;
 import org.eocencle.winger.server.JettyServer;
 import org.eocencle.winger.session.JsonSession;
 import org.eocencle.winger.session.JsonSessionFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -40,7 +43,14 @@ public class Test {
 
 	public static void main(String[] args) throws IOException {
 		//testJetty();
-		testWinger();
+		//testWinger();
+		testSpring();
+	}
+	
+	public static void testSpring() {
+		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
+		UserService user = ctx.getBean(UserService.class);
+		System.out.println(user.toString());
 	}
 	
 	public static void testJetty() {

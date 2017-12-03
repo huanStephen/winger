@@ -32,8 +32,8 @@ public abstract class ReflectResponseBranch extends AbstractResponseBranch {
 	
 	protected Gson gson = new Gson();
 	
-	public ReflectResponseBranch(String action, Object target, Method method, Configuration configuration) {
-		super(action, configuration);
+	public ReflectResponseBranch(String name, Object target, Method method, Configuration configuration) {
+		super(name, configuration);
 		this.target = target;
 		this.method = method;
 	}

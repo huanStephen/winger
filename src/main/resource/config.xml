@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE configuration PUBLIC "-//www.eocencle.org//DTD Config 1.0//EN" "http://www.eocencle.org/winger/dtd/winger-1-config.dtd">
 <configuration>
-	<apis scan=""/>
+	<apis scan="org.eocencle.winger.gateway.test" container="spring.xml"/>
 
 	<xmls>
 		<response resource="response.xml"/>

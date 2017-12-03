@@ -19,29 +19,40 @@ import org.eocencle.winger.gateway.ApiMapping;
 import org.eocencle.winger.mapping.ApiResponseBranch;
 import org.eocencle.winger.scripting.java.JavaJsonSource;
 import org.eocencle.winger.session.Configuration;
+import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class ResponseAnnotationBuilder extends BaseBuilder {
 
 	private String packet;
 	
+	private String container;
+	
 	private ApplicationContext applicationContext;
 	
-	public ResponseAnnotationBuilder(Configuration configuration, String packet, ApplicationContext applicationContext) {
+	public ResponseAnnotationBuilder(Configuration configuration, String packet, String container) {
 		super(configuration);
 		this.packet = packet;
-		this.applicationContext = applicationContext;
+		this.container = container;
+		this.applicationContext = new ClassPathXmlApplicationContext(this.container);
 	}
 	
 	public void parse() {
 		if (StringUtils.isNotBlank(this.packet)) {
 			List<Class<?>> cls = this.getClasses(this.packet);
+			Object bean = null;
 			for (Class<?> clazz : cls) {
+				try {
+					bean = this.applicationContext.getBean(clazz);
+				} catch (BeansException e) {
+					// object not found
+					continue;
+				}
 				for (Method m : clazz.getDeclaredMethods()) {
 					ApiMapping apiMapping = m.getAnnotation(ApiMapping.class);
-					Object bean = this.applicationContext.getBean(clazz);
 					if (null != apiMapping && null != bean) {
-						ApiResponseBranch apiResponseBranch = new ApiResponseBranch(null, null, null, configuration, new JavaJsonSource(bean, m, this.configuration));
+						ApiResponseBranch apiResponseBranch = new ApiResponseBranch(apiMapping.value(), bean, m, configuration, new JavaJsonSource(bean, m, this.configuration));
 						this.configuration.addResponseBranch(apiResponseBranch);
 					}
 				}

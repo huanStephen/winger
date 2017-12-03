@@ -16,8 +16,8 @@ public abstract class AbstractResponseBranch {
 	// 配置
 	protected Configuration configuration;
 	
-	public AbstractResponseBranch(String action, Configuration configuration) {
-		this(action, RequestType.GET, configuration);
+	public AbstractResponseBranch(String name, Configuration configuration) {
+		this(name, RequestType.GET, configuration);
 	}
 	
 	public AbstractResponseBranch(String name, RequestType type, Configuration configuration) {

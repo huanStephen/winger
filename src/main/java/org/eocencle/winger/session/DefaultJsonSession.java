@@ -2,7 +2,7 @@ package org.eocencle.winger.session;
 
 import java.util.Map;
 
-import org.eocencle.winger.mapping.XmlResponseBranch;
+import org.eocencle.winger.mapping.AbstractResponseBranch;
 
 public class DefaultJsonSession implements JsonSession {
 
@@ -13,7 +13,7 @@ public class DefaultJsonSession implements JsonSession {
 	}
 	
 	public String request(String name, Map<String, Object> params) {
-		XmlResponseBranch branch = (XmlResponseBranch) this.configuration.getResponseBranch(name);
+		AbstractResponseBranch branch = this.configuration.getResponseBranch(name);
 		return branch.getBoundJson(params).getJson();
 	}
 

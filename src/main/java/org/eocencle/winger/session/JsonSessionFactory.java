@@ -8,26 +8,17 @@ import java.util.Properties;
 import org.eocencle.winger.builder.xml.XMLConfigBuilder;
 import org.eocencle.winger.exceptions.ExceptionFactory;
 import org.eocencle.winger.executor.ErrorContext;
-import org.springframework.context.ApplicationContext;
 
 public class JsonSessionFactory {
 	private XMLConfigBuilder parser;
 	
 	public JsonSession build(Reader reader) {
-		return build(reader, null, null);
-	}
-
-	public JsonSession build(Reader reader, ApplicationContext applicationContext) {
-		return build(reader, applicationContext, null);
+		return build(reader, null);
 	}
 
 	public JsonSession build(Reader reader, Properties properties) {
-		return build(reader, null, properties);
-	}
-
-	public JsonSession build(Reader reader, ApplicationContext applicationContext, Properties properties) {
 		try {
-			XMLConfigBuilder parser = new XMLConfigBuilder(reader, applicationContext, properties);
+			XMLConfigBuilder parser = new XMLConfigBuilder(reader, properties);
 			return build(parser.parse());
 		} catch (Exception e) {
 			throw ExceptionFactory.wrapException("Error building SqlSession.", e);
@@ -42,20 +33,12 @@ public class JsonSessionFactory {
 	}
 
 	public JsonSession build(InputStream inputStream) {
-		return build(inputStream, null, null);
-	}
-
-	public JsonSession build(InputStream inputStream, ApplicationContext applicationContext) {
-		return build(inputStream, applicationContext, null);
+		return build(inputStream, null);
 	}
 
 	public JsonSession build(InputStream inputStream, Properties properties) {
-		return build(inputStream, null, properties);
-	}
-
-	public JsonSession build(InputStream inputStream, ApplicationContext applicationContext, Properties properties) {
 		try {
-			this.parser = new XMLConfigBuilder(inputStream, applicationContext, properties);
+			this.parser = new XMLConfigBuilder(inputStream, properties);
 			return build(parser.parse());
 		} catch (Exception e) {
 			throw ExceptionFactory.wrapException("Error building SqlSession.", e);

@@ -14,8 +14,8 @@ public class ApiResponseBranch extends ReflectResponseBranch {
 	
 	private JsonSource jsonSource;
 
-	public ApiResponseBranch(String action, Object target, Method method, Configuration configuration, JsonSource jsonSource) {
-		super(action, target, method, configuration);
+	public ApiResponseBranch(String name, Object target, Method method, Configuration configuration, JsonSource jsonSource) {
+		super(name, target, method, configuration);
 		this.jsonSource = jsonSource;
 	}
 	
@@ -26,17 +26,6 @@ public class ApiResponseBranch extends ReflectResponseBranch {
 
 	@Override
 	public BoundJson getBoundJson(Map<String, Object> params) {
-		Object[] args = this.buildParams(params);
-		Object obj = null;
-		try {
-			obj = this.invoke(args);
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}
-		return new BoundJson(this.configuration, this.convertBeanToJson(obj));
+		return this.jsonSource.getBoundJson(params);
 	}
 }
