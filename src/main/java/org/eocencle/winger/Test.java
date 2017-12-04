@@ -17,8 +17,8 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.eocencle.winger.api.UserService;
 import org.eocencle.winger.builder.xml.XMLMapperEntityResolver;
-import org.eocencle.winger.gateway.test.UserService;
 import org.eocencle.winger.io.Resources;
 import org.eocencle.winger.scripting.xmltags.OgnlCache;
 import org.eocencle.winger.server.JettyServer;

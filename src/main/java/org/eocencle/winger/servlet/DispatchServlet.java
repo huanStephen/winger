@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.eocencle.winger.gateway.HttpHandler;
 import org.eocencle.winger.io.Resources;
 import org.eocencle.winger.session.JsonSession;
 import org.eocencle.winger.session.JsonSessionFactory;
@@ -18,8 +17,6 @@ public class DispatchServlet extends HttpServlet {
 	private static final long serialVersionUID = -3132559656666240695L;
 	
 	private JsonSession session;
-	
-	private HttpHandler httpHandler;
 
 	@Override
 	public void init() throws ServletException {
@@ -30,17 +27,16 @@ public class DispatchServlet extends HttpServlet {
 			e.printStackTrace();
 		}
 		session = new JsonSessionFactory().build(is);
-		this.httpHandler = new HttpHandler(this.session);
 	}
 	
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		this.httpHandler.handle(request, response);
+		this.session.request(request, response);
 	}
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		this.httpHandler.handle(request, response);
+		this.session.request(request, response);
 	}
 
 }

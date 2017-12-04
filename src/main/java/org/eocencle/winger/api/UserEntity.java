@@ -1,4 +1,4 @@
-package org.eocencle.winger.gateway.test;
+package org.eocencle.winger.api;
 
 public class UserEntity {
 	private int id;

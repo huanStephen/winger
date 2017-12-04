@@ -1,12 +1,12 @@
-package org.eocencle.winger.gateway.test;
+package org.eocencle.winger.api;
 
-import org.eocencle.winger.gateway.ApiMapping;
+import org.eocencle.winger.mapping.ApiBranch;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
 	
-	@ApiMapping("/winger/getUser")
+	@ApiBranch("/winger/getUser")
 	public UserEntity getUser(Integer id, String name, UserEntity user) {
 		System.out.println("id:" + id + ",name:" + name);
 		System.out.println(user.toString());

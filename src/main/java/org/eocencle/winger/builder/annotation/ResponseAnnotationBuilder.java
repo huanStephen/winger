@@ -15,7 +15,7 @@ import java.util.jar.JarFile;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eocencle.winger.builder.BaseBuilder;
-import org.eocencle.winger.gateway.ApiMapping;
+import org.eocencle.winger.mapping.ApiBranch;
 import org.eocencle.winger.mapping.ApiResponseBranch;
 import org.eocencle.winger.scripting.java.JavaJsonSource;
 import org.eocencle.winger.session.Configuration;
@@ -50,9 +50,9 @@ public class ResponseAnnotationBuilder extends BaseBuilder {
 					continue;
 				}
 				for (Method m : clazz.getDeclaredMethods()) {
-					ApiMapping apiMapping = m.getAnnotation(ApiMapping.class);
-					if (null != apiMapping && null != bean) {
-						ApiResponseBranch apiResponseBranch = new ApiResponseBranch(apiMapping.value(), bean, m, configuration, new JavaJsonSource(bean, m, this.configuration));
+					ApiBranch apiBranch = m.getAnnotation(ApiBranch.class);
+					if (null != apiBranch && null != bean) {
+						ApiResponseBranch apiResponseBranch = new ApiResponseBranch(apiBranch.value(), bean, m, configuration, new JavaJsonSource(bean, m, this.configuration));
 						this.configuration.addResponseBranch(apiResponseBranch);
 					}
 				}
