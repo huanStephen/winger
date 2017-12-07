@@ -4,7 +4,7 @@ import org.eocencle.winger.builder.IncompleteElementException;
 import org.eocencle.winger.builder.ResponseBuilderAssistant;
 import org.eocencle.winger.parsing.XNode;
 import org.eocencle.winger.session.Configuration;
-import org.eocencle.winger.type.ContextPathType;
+import org.eocencle.winger.type.NamespaceType;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -38,7 +38,7 @@ public class XMLIncludeTransformer {
 	}
 	
 	private Node findJsonFragment(String refid) {
-		refid = this.builderAssistant.applyCurrentContextPath(refid, true, ContextPathType.JSON);
+		refid = this.builderAssistant.applyCurrentNamespace(refid, true, NamespaceType.JSON);
 		try {
 			XNode nodeToInclude = this.configuration.getJsonFragments().get(refid);
 			Node result = nodeToInclude.getNode().cloneNode(true);

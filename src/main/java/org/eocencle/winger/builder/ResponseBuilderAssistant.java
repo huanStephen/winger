@@ -7,10 +7,10 @@ import org.eocencle.winger.mapping.AbstractResponseBranch.RequestType;
 import org.eocencle.winger.mapping.JsonSource;
 import org.eocencle.winger.mapping.XmlResponseBranch;
 import org.eocencle.winger.session.Configuration;
-import org.eocencle.winger.type.ContextPathType;
+import org.eocencle.winger.type.NamespaceType;
 
 public class ResponseBuilderAssistant extends BaseBuilder {
-	private String currentContextPath;
+	private String currentNamespace;
 	private String resource;
 	private Cache currentCache;
 	private boolean unresolvedCacheRef;
@@ -22,28 +22,28 @@ public class ResponseBuilderAssistant extends BaseBuilder {
 	}
 
 	public String getCurrentContextPath() {
-		return currentContextPath;
+		return currentNamespace;
 	}
 
-	public void setCurrentContextPath(String currentContextPath) {
-		if (currentContextPath == null) {
+	public void setCurrentNamespace(String currentNamespace) {
+		if (currentNamespace == null) {
 			throw new BuilderException("The response element requires a contextpath attribute to be specified.");
 		}
 
-		if (this.currentContextPath != null && !this.currentContextPath.equals(currentContextPath)) {
-			throw new BuilderException("Wrong namespace. Expected '" + this.currentContextPath + "' but found '" + currentContextPath + "'.");
+		if (this.currentNamespace != null && !this.currentNamespace.equals(currentNamespace)) {
+			throw new BuilderException("Wrong namespace. Expected '" + this.currentNamespace + "' but found '" + currentNamespace + "'.");
 		}
 
-		this.currentContextPath = currentContextPath;
+		this.currentNamespace = currentNamespace;
 	}
 
-	public String applyCurrentContextPath(String base, boolean isReference, ContextPathType type) {
+	public String applyCurrentNamespace(String base, boolean isReference, NamespaceType type) {
 		if (base == null || base.isEmpty()) return null;
 		// branch不能被索引
-		if (isReference && ContextPathType.BRANCH == type) {
+		if (isReference && NamespaceType.BRANCH == type) {
 			throw new BuilderException("Branches cannot be referenced");
 		}
-		if (ContextPathType.BRANCH == type) {
+		if (NamespaceType.BRANCH == type) {
 			// 第一个字符不是/则补全；仅有/的抛无效action异常
 			if (0 != base.indexOf("/")) {
 				base = "/" + base;
@@ -52,7 +52,7 @@ public class ResponseBuilderAssistant extends BaseBuilder {
 					throw new BuilderException("Invalid action from " + base);
 				}
 			}
-		} else if (ContextPathType.JSON == type) {
+		} else if (NamespaceType.JSON == type) {
 			// 索引情况下必须包含/和#或者什么也不包含，否则抛无效reference异常
 			if (isReference) {
 				if (base.contains("/") && base.contains("#")) {
@@ -71,14 +71,14 @@ public class ResponseBuilderAssistant extends BaseBuilder {
 			}
 			base = "#" + base;
 		}
-		return this.currentContextPath + base;
+		return this.currentNamespace + base;
 	}
 
 	public AbstractResponseBranch addResponseBranch(String name, RequestType type, JsonSource jsonSource) {
 		
 		if (unresolvedCacheRef) throw new IncompleteElementException("Cache-ref not yet resolved");
 		
-		name = this.applyCurrentContextPath(name, false, ContextPathType.BRANCH);
+		name = this.applyCurrentNamespace(name, false, NamespaceType.BRANCH);
 
 		XmlResponseBranch branch = new XmlResponseBranch(name, type, configuration, jsonSource);
 		this.configuration.addResponseBranch(branch);

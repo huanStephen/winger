@@ -4,6 +4,7 @@
 <!ELEMENT apis EMPTY>
 <!ATTLIST apis 
 scan CDATA #IMPLIED
+container CDATA #IMPLIED
 >
 
 <!ELEMENT xmls (response+)>

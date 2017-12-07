@@ -1,5 +1,5 @@
 package org.eocencle.winger.type;
 
-public enum ContextPathType {
+public enum NamespaceType {
 	BRANCH, JSON
 }

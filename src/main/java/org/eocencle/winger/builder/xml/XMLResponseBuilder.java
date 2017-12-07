@@ -11,7 +11,7 @@ import org.eocencle.winger.builder.ResponseBuilderAssistant;
 import org.eocencle.winger.parsing.XNode;
 import org.eocencle.winger.parsing.XPathParser;
 import org.eocencle.winger.session.Configuration;
-import org.eocencle.winger.type.ContextPathType;
+import org.eocencle.winger.type.NamespaceType;
 
 public class XMLResponseBuilder extends BaseBuilder {
 	private XPathParser parser;
@@ -20,9 +20,9 @@ public class XMLResponseBuilder extends BaseBuilder {
 	protected String resource;
 
 	@Deprecated
-	public XMLResponseBuilder(Reader reader, Configuration configuration, String resource, Map<String, XNode> jsonFragments, String contextPath) {
+	public XMLResponseBuilder(Reader reader, Configuration configuration, String resource, Map<String, XNode> jsonFragments, String namespace) {
 		this(reader, configuration, resource, jsonFragments);
-		this.builderAssistant.setCurrentContextPath(contextPath);
+		this.builderAssistant.setCurrentNamespace(namespace);
 	}
 
 	@Deprecated
@@ -30,9 +30,9 @@ public class XMLResponseBuilder extends BaseBuilder {
 		this(new XPathParser(reader, true, configuration.getVariables(), new XMLMapperEntityResolver()), configuration, resource, jsonFragments);
 	}
 
-	public XMLResponseBuilder(InputStream inputStream, Configuration configuration, String resource, Map<String, XNode> jsonFragments, String contextPath) {
+	public XMLResponseBuilder(InputStream inputStream, Configuration configuration, String resource, Map<String, XNode> jsonFragments, String namespace) {
 		this(inputStream, configuration, resource, jsonFragments);
-		this.builderAssistant.setCurrentContextPath(contextPath);
+		this.builderAssistant.setCurrentNamespace(namespace);
 	}
 
 	public XMLResponseBuilder(InputStream inputStream, Configuration configuration, String resource, Map<String, XNode> jsonFragments) {
@@ -57,14 +57,14 @@ public class XMLResponseBuilder extends BaseBuilder {
 
 	private void configurationElement(XNode context) {
 		try {
-			String contextpath = context.getStringAttribute("contextpath");
-			if (0 != contextpath.indexOf("/")) {
-				contextpath = "/" + contextpath;
+			String namespace = context.getStringAttribute("namespace");
+			if (0 != namespace.indexOf("/")) {
+				namespace = "/" + namespace;
 			}
-			if (contextpath.lastIndexOf("/") == contextpath.length() - 1) {
-				contextpath = contextpath.substring(0, contextpath.length() - 1);
+			if (namespace.lastIndexOf("/") == namespace.length() - 1) {
+				namespace = namespace.substring(0, namespace.length() - 1);
 			}
-			this.builderAssistant.setCurrentContextPath(contextpath);
+			this.builderAssistant.setCurrentNamespace(namespace);
 			this.jsonElement(context.evalNodes("json"));
 			this.buildBranchFormContext(context.evalNodes("branch"));
 		} catch (Exception e) {
@@ -86,7 +86,7 @@ public class XMLResponseBuilder extends BaseBuilder {
 	private void jsonElement(List<XNode> list) throws Exception {
 		for (XNode context : list) {
 			String id = context.getStringAttribute("id");
-			id = this.builderAssistant.applyCurrentContextPath(id, false, ContextPathType.JSON);
+			id = this.builderAssistant.applyCurrentNamespace(id, false, NamespaceType.JSON);
 			
 			this.jsonFragments.put(id, context);
 		}
