@@ -16,6 +16,7 @@ import java.util.jar.JarFile;
 import org.apache.commons.lang3.StringUtils;
 import org.eocencle.winger.builder.BaseBuilder;
 import org.eocencle.winger.mapping.ApiBranch;
+import org.eocencle.winger.mapping.ApiNamespace;
 import org.eocencle.winger.mapping.ApiResponseBranch;
 import org.eocencle.winger.scripting.java.JavaJsonSource;
 import org.eocencle.winger.session.Configuration;
@@ -42,17 +43,28 @@ public class ResponseAnnotationBuilder extends BaseBuilder {
 		if (StringUtils.isNotBlank(this.packet)) {
 			List<Class<?>> cls = this.getClasses(this.packet);
 			Object bean = null;
+			String namespace = null;
 			for (Class<?> clazz : cls) {
 				try {
 					bean = this.applicationContext.getBean(clazz);
+					namespace = clazz.getAnnotation(ApiNamespace.class).value();
+					if (0 != namespace.indexOf("/")) {
+						namespace = "/" + namespace;
+					}
+					if (namespace.lastIndexOf("/") == namespace.length() - 1) {
+						namespace = namespace.substring(0, namespace.length() - 1);
+					}
 				} catch (BeansException e) {
 					// object not found
 					continue;
+				} catch (NullPointerException e) {
+					namespace = "";
 				}
 				for (Method m : clazz.getDeclaredMethods()) {
 					ApiBranch apiBranch = m.getAnnotation(ApiBranch.class);
 					if (null != apiBranch && null != bean) {
-						ApiResponseBranch apiResponseBranch = new ApiResponseBranch(apiBranch.value(), bean, m, configuration, new JavaJsonSource(bean, m, this.configuration));
+						ApiResponseBranch apiResponseBranch = 
+							new ApiResponseBranch(namespace + apiBranch.value(), bean, m, configuration, new JavaJsonSource(bean, m, this.configuration));
 						this.configuration.addResponseBranch(apiResponseBranch);
 					}
 				}
