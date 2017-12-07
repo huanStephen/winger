@@ -36,7 +36,7 @@ public class XMLBranchBuilder extends BaseBuilder {
 		if (lang == null) {
 			langClass = configuration.getLanguageRegistry().getDefaultDriverClass();
 		} else {
-			langClass = resolveClass(lang);
+			langClass = null;
 			configuration.getLanguageRegistry().register(langClass);
 		}
 		if (langClass == null) {

@@ -1,6 +1,10 @@
 package org.eocencle.winger.logging.slf4j;
 
 import org.eocencle.winger.logging.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
+import org.slf4j.spi.LocationAwareLogger;
 
 public class Slf4jImpl implements Log {
 	private Log log;

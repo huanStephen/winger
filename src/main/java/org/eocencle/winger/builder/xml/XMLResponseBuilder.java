@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.eocencle.winger.builder.BaseBuilder;
-import org.eocencle.winger.builder.IncompleteElementException;
 import org.eocencle.winger.builder.ResponseBuilderAssistant;
 import org.eocencle.winger.parsing.XNode;
 import org.eocencle.winger.parsing.XPathParser;
@@ -75,11 +74,7 @@ public class XMLResponseBuilder extends BaseBuilder {
 	private void buildBranchFormContext(List<XNode> list) {
 		for (XNode context : list) {
 			final XMLBranchBuilder branchParser = new XMLBranchBuilder(this.configuration, this.builderAssistant, context);
-			try {
-				branchParser.parseBranchNode();
-			} catch (IncompleteElementException e) {
-				this.configuration.addIncompleteBranch(branchParser);
-			}
+			branchParser.parseBranchNode();
 		}
 	}
 	

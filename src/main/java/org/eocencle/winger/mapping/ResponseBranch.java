@@ -1,6 +1,5 @@
 package org.eocencle.winger.mapping;
 
-import java.util.List;
 import java.util.Map;
 
 import org.eocencle.winger.logging.Log;
@@ -87,11 +86,6 @@ public final class ResponseBranch {
 
 	public BoundJson getBoundJson(Map<String, Object> params) {
 		BoundJson boundJson = this.jsonSource.getBoundJson(params);
-		List<ParameterMapping> parameterMappings = boundJson.getParameterMappings();
-		if (parameterMappings == null || parameterMappings.size() <= 0) {
-			boundJson = new BoundJson(configuration, boundJson.getJson(), params);
-		}
-
-		return boundJson;
+		return new BoundJson(configuration, boundJson.getJson(), params);
 	}
 }

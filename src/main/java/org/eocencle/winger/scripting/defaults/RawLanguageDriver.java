@@ -10,7 +10,8 @@ import org.eocencle.winger.session.Configuration;
 
 public class RawLanguageDriver implements LanguageDriver {
 	public ParameterHandler createParameterHandler(ResponseBranch responseBranch, Object parameterObject, BoundJson boundJson) {
-		return new DefaultParameterHandler(responseBranch, parameterObject, boundJson);
+		//return new DefaultParameterHandler(responseBranch, parameterObject, boundJson);
+		return null;
 	}
 
 	public JsonSource createJsonSource(Configuration configuration, XNode script) {

@@ -1,7 +1,6 @@
 package org.eocencle.winger.mapping;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.eocencle.winger.reflection.MetaObject;
@@ -9,7 +8,6 @@ import org.eocencle.winger.session.Configuration;
 
 public class BoundJson {
 	private String json;
-	private List<ParameterMapping> parameterMappings;
 	private Object parameterObject;
 	private Map<String, Object> additionalParameters;
 	private MetaObject metaParameters;
@@ -27,10 +25,6 @@ public class BoundJson {
 
 	public String getJson() {
 		return this.json;
-	}
-
-	public List<ParameterMapping> getParameterMappings() {
-		return this.parameterMappings;
 	}
 
 	public Object getParameterObject() {

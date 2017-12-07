@@ -1,22 +1,15 @@
 package org.eocencle.winger.session;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import org.eocencle.winger.binding.ResponseRegistry;
-import org.eocencle.winger.builder.CacheRefResolver;
-import org.eocencle.winger.builder.MethodResolver;
-import org.eocencle.winger.builder.xml.XMLBranchBuilder;
 import org.eocencle.winger.logging.Log;
 import org.eocencle.winger.logging.LogFactory;
 import org.eocencle.winger.mapping.AbstractResponseBranch;
-import org.eocencle.winger.mapping.Environment;
 import org.eocencle.winger.parsing.XNode;
 import org.eocencle.winger.plugin.Interceptor;
 import org.eocencle.winger.plugin.InterceptorChain;
@@ -29,12 +22,8 @@ import org.eocencle.winger.scripting.LanguageDriver;
 import org.eocencle.winger.scripting.LanguageDriverRegistry;
 import org.eocencle.winger.scripting.defaults.RawLanguageDriver;
 import org.eocencle.winger.scripting.xmltags.XMLLanguageDriver;
-import org.eocencle.winger.type.TypeAliasRegistry;
-import org.eocencle.winger.type.TypeHandlerRegistry;
 
 public class Configuration {
-	protected Environment environment;
-
 	protected String logPrefix;
 	protected Class <? extends Log> logImpl;
 	protected Set<String> lazyLoadTriggerMethods = new HashSet<String>(Arrays.asList(new String[] { "equals", "clone", "hashCode", "toString" }));
@@ -42,21 +31,14 @@ public class Configuration {
 	protected Properties variables = new Properties();
 	protected ObjectFactory objectFactory = new DefaultObjectFactory();
 	protected ObjectWrapperFactory objectWrapperFactory = new DefaultObjectWrapperFactory();
-	protected ResponseRegistry responseRegistry = new ResponseRegistry(this);
 
 	protected final InterceptorChain interceptorChain = new InterceptorChain();
-	protected final TypeHandlerRegistry typeHandlerRegistry = new TypeHandlerRegistry();
-	protected final TypeAliasRegistry typeAliasRegistry = new TypeAliasRegistry();
 	protected final LanguageDriverRegistry languageRegistry = new LanguageDriverRegistry();
 
 	protected final Map<String, AbstractResponseBranch> responseBranchs = new StrictMap<AbstractResponseBranch>("Response Branchs collection");
 
 	protected final Set<String> loadedResources = new HashSet<String>();
 	protected final Map<String, XNode> jsonFragments = new StrictMap<XNode>("XML fragments parsed from previous responses");
-
-	protected final Collection<XMLBranchBuilder> incompleteBranchs = new LinkedList<XMLBranchBuilder>();
-	protected final Collection<CacheRefResolver> incompleteCacheRefs = new LinkedList<CacheRefResolver>();
-	protected final Collection<MethodResolver> incompleteMethods = new LinkedList<MethodResolver>();
 
 	/*
 	 * A map holds cache-ref relationship. The key is the namespace that
@@ -65,38 +47,7 @@ public class Configuration {
 	 */
 	protected final Map<String, String> cacheRefMap = new HashMap<String, String>();
 
-	public Configuration(Environment environment) {
-		this();
-		this.environment = environment;
-	}
-
 	public Configuration() {
-		/*typeAliasRegistry.registerAlias("MANAGED", ManagedTransactionFactory.class);
-		typeAliasRegistry.registerAlias("JNDI", JndiDataSourceFactory.class);
-		typeAliasRegistry.registerAlias("POOLED", PooledDataSourceFactory.class);
-		typeAliasRegistry.registerAlias("UNPOOLED", UnpooledDataSourceFactory.class);
-
-		typeAliasRegistry.registerAlias("PERPETUAL", PerpetualCache.class);
-		typeAliasRegistry.registerAlias("FIFO", FifoCache.class);
-		typeAliasRegistry.registerAlias("LRU", LruCache.class);
-		typeAliasRegistry.registerAlias("SOFT", SoftCache.class);
-		typeAliasRegistry.registerAlias("WEAK", WeakCache.class);
-
-		typeAliasRegistry.registerAlias("VENDOR", VendorDatabaseIdProvider.class);
-
-		typeAliasRegistry.registerAlias("XML", XMLLanguageDriver.class);
-		typeAliasRegistry.registerAlias("RAW", RawLanguageDriver.class);
-
-		typeAliasRegistry.registerAlias("SLF4J", Slf4jImpl.class);
-		typeAliasRegistry.registerAlias("COMMONS_LOGGING", JakartaCommonsLoggingImpl.class);
-		typeAliasRegistry.registerAlias("LOG4J", Log4jImpl.class);
-		typeAliasRegistry.registerAlias("JDK_LOGGING", Jdk14LoggingImpl.class);
-		typeAliasRegistry.registerAlias("STDOUT_LOGGING", StdOutImpl.class);
-		typeAliasRegistry.registerAlias("NO_LOGGING", NoLoggingImpl.class);
-		
-		typeAliasRegistry.registerAlias("CGLIB", CglibProxyFactory.class);
-		typeAliasRegistry.registerAlias("JAVASSIST", JavassistProxyFactory.class);*/
-		
 		this.languageRegistry.setDefaultDriverClass(XMLLanguageDriver.class);
 		this.languageRegistry.register(RawLanguageDriver.class);
 	}
@@ -133,14 +84,6 @@ public class Configuration {
 		this.loadedResources.remove(resource);
 	}
 
-	public Environment getEnvironment() {
-		return environment;
-	}
-
-	public void setEnvironment(Environment environment) {
-		this.environment = environment;
-	}
-
 	public Set<String> getLazyLoadTriggerMethods() {
 		return lazyLoadTriggerMethods;
 	}
@@ -155,14 +98,6 @@ public class Configuration {
 
 	public void setVariables(Properties variables) {
 		this.variables = variables;
-	}
-
-	public TypeHandlerRegistry getTypeHandlerRegistry() {
-		return typeHandlerRegistry;
-	}
-
-	public TypeAliasRegistry getTypeAliasRegistry() {
-		return typeAliasRegistry;
 	}
 
 	public ObjectFactory getObjectFactory() {
@@ -202,26 +137,6 @@ public class Configuration {
 	
 	public void addResponseBranch(AbstractResponseBranch arb) {
 		this.responseBranchs.put(arb.getName(), arb);
-	}
-	
-	public void addIncompleteBranch(XMLBranchBuilder incompleteBranch) {
-		incompleteBranchs.add(incompleteBranch);
-	}
-
-	public Collection<CacheRefResolver> getIncompleteCacheRefs() {
-		return incompleteCacheRefs;
-	}
-
-	public void addIncompleteCacheRef(CacheRefResolver incompleteCacheRef) {
-		incompleteCacheRefs.add(incompleteCacheRef);
-	}
-
-	public void addIncompleteMethod(MethodResolver builder) {
-		incompleteMethods.add(builder);
-	}
-
-	public Collection<MethodResolver> getIncompleteMethods() {
-		return incompleteMethods;
 	}
 	
 	public AbstractResponseBranch getResponseBranch(String action) {
