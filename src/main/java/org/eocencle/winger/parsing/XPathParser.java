@@ -1,6 +1,11 @@
 package org.eocencle.winger.parsing;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -10,6 +15,13 @@ import java.util.Properties;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
@@ -245,5 +257,43 @@ public class XPathParser {
 		this.variables = variables;
 		XPathFactory factory = XPathFactory.newInstance();
 		this.xpath = factory.newXPath();
+	}
+	
+	public XNode createElement(String tagName) {
+		return new XNode(this, this.document.createElement(tagName), this.variables);
+	}
+
+	public Document getDocument() {
+		return document;
+	}
+	
+	public void writeXML(String filePath) {
+		TransformerFactory transFactory = TransformerFactory.newInstance();
+		Transformer transformer = null;
+		try {
+			String parent = new File(filePath).getParent();
+			File pDir = new File(parent);
+			if (!pDir.exists()) {
+				pDir.mkdirs();
+			}
+			OutputStream os = new FileOutputStream(new File(filePath));
+			transformer = transFactory.newTransformer();
+			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+			transformer.setOutputProperty(OutputKeys.ENCODING, "utf-8");
+			DOMSource source = new DOMSource();
+			source.setNode(this.document);
+			StreamResult result = new StreamResult();
+			result.setOutputStream(os);
+			transformer.transform(source, result);
+			os.flush();
+		} catch (TransformerConfigurationException e) {
+			e.printStackTrace();
+		} catch (TransformerException e) {
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

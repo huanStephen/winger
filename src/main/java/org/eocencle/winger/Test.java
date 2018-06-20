@@ -1,17 +1,30 @@
 package org.eocencle.winger;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
@@ -20,6 +33,8 @@ import javax.xml.xpath.XPathFactory;
 import org.eocencle.winger.api.UserService;
 import org.eocencle.winger.builder.xml.XMLMapperEntityResolver;
 import org.eocencle.winger.io.Resources;
+import org.eocencle.winger.parsing.XNode;
+import org.eocencle.winger.parsing.XPathParser;
 import org.eocencle.winger.scripting.xmltags.OgnlCache;
 import org.eocencle.winger.server.JettyServer;
 import org.eocencle.winger.session.JsonSession;
@@ -28,6 +43,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.xml.sax.Attributes;
@@ -44,7 +60,86 @@ public class Test {
 	public static void main(String[] args) throws IOException {
 		//testJetty();
 		//testWinger();
-		testSpring();
+		//testSpring();
+		writeXml();
+		//generateXML();
+	}
+	
+	public static void generateXML(){  
+        try {  
+            Element root;  
+            Set<String> set = new HashSet<>();  
+            set.add("node");  
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();  
+            factory.setNamespaceAware(true);  
+            DocumentBuilder documentBuilder = null;  
+            documentBuilder = factory.newDocumentBuilder();  
+            Document document = documentBuilder.newDocument();  
+            root = document.createElement("dataset");  
+            document.appendChild(root);  
+            set.forEach(p -> {  
+                Element element = document.createElement(p);  
+                element.setAttribute("column","haha");  
+                element.setAttribute("property","heihei");  
+                root.appendChild(element);  
+            });  
+            writeXML(document, "E:/mine/git/winger/src/main/resource/abc.xml");
+        } catch (ParserConfigurationException e) {  
+            e.printStackTrace();  
+        }  
+    }
+	
+	private static void writeXML(Document document, String filePath) {  
+		  
+        TransformerFactory transFactory = TransformerFactory.newInstance();  
+        Transformer transformer = null;  
+        try {  
+            String parent = new File(filePath).getParent();  
+            File pDir = new File(parent);  
+            if (!pDir.exists()) {  
+                pDir.mkdirs();  
+            }  
+            OutputStream os = new FileOutputStream(new File(filePath));  
+            transformer = transFactory.newTransformer();  
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");  
+            transformer.setOutputProperty(OutputKeys.ENCODING, "utf-8");  
+            DOMSource source = new DOMSource();  
+            source.setNode(document);  
+            StreamResult result = new StreamResult();  
+            result.setOutputStream(os);  
+            transformer.transform(source, result);  
+            os.flush();  
+        } catch (TransformerConfigurationException e) {  
+            e.printStackTrace();  
+        } catch (TransformerException e) {  
+            e.printStackTrace();  
+        } catch (FileNotFoundException e) {  
+            e.printStackTrace();  
+        } catch (IOException e) {  
+            e.printStackTrace();  
+        }  
+    }
+	
+	public static void writeXml() {
+		XPathParser parser = null;
+		try {
+			parser = new XPathParser(Resources.getResourceAsStream("response.xml"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		XNode node = parser.evalNode("/response");
+		XNode el = parser.createElement("json");
+		el.setAttribute("id", "result3");
+		el.appendChild("张三");
+		XNode el1 = parser.createElement("include");
+		el1.setAttribute("refid", "result1");
+		el.appendChild(el1);
+		el.appendChild(parser.getDocument().createTextNode("李四"));
+		//node = node.evalNode("a");
+		node.appendChild(el);
+		
+		parser.writeXML("E:/mine/git/winger/src/main/resource/abc.xml");
 	}
 	
 	public static void testSpring() {

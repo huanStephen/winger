@@ -361,4 +361,21 @@ public class XNode {
 		}
 		return null;
 	}
+	
+	public void setAttribute(String name, String value) {
+		((Element) this.node).setAttribute(name, value);
+	}
+	
+	public void appendChild(Node node) {
+		this.node.appendChild(node);
+		this.node.appendChild(this.xpathParser.getDocument().createTextNode("\n"));
+	}
+	
+	public void appendChild(XNode node) {
+		this.appendChild(node.getNode());
+	}
+	
+	public void appendChild(String content) {
+		this.appendChild(this.xpathParser.getDocument().createTextNode(content));
+	}
 }

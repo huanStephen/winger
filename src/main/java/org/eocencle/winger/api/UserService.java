@@ -5,7 +5,7 @@ import org.eocencle.winger.mapping.ApiNamespace;
 import org.springframework.stereotype.Service;
 
 @Service
-@ApiNamespace("/winger")
+@ApiNamespace("/winger1")
 public class UserService {
 	
 	@ApiBranch("/getUser")
