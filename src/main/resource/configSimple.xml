@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//www.eocencle.org//DTD Config 1.0//EN" "http://www.eocencle.org/winger/dtd/winger-1-config.dtd">
+<project contextPath="demo">
+	<server mode="own|other" port="8088" />
+	
+	<intercepters>
+		<intercepter class=""/>
+	</intercepters>
+
+	<apis scan="org.eocencle.winger.api" genMode="invoke|spring"/>
+
+	<xmls>
+		<response resource="response.xml"/>
+	</xmls>
+</project>

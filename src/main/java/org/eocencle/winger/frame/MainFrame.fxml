@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+
+<VBox prefHeight="640.0" prefWidth="1022.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.eocencle.winger.frame.MainFrameController">
+  <children>
+    <MenuBar prefHeight="23.0" prefWidth="754.0" VBox.vgrow="NEVER">
+      <menus>
+        <Menu mnemonicParsing="false" text="File">
+          <items>
+            <MenuItem mnemonicParsing="false" text="New" />
+            <MenuItem mnemonicParsing="false" text="Open…" />
+            <Menu mnemonicParsing="false" text="Open Recent" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" text="Close" />
+            <MenuItem mnemonicParsing="false" text="Save" />
+            <MenuItem mnemonicParsing="false" text="Save As…" />
+            <MenuItem mnemonicParsing="false" text="Revert" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" text="Preferences…" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" text="Quit" />
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Edit">
+          <items>
+            <MenuItem mnemonicParsing="false" text="Undo" />
+            <MenuItem mnemonicParsing="false" text="Redo" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" text="Cut" />
+            <MenuItem mnemonicParsing="false" text="Copy" />
+            <MenuItem mnemonicParsing="false" text="Paste" />
+            <MenuItem mnemonicParsing="false" text="Delete" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" text="Select All" />
+            <MenuItem mnemonicParsing="false" text="Unselect All" />
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Help">
+          <items>
+            <MenuItem mnemonicParsing="false" text="About MyHelloApp" />
+          </items>
+        </Menu>
+      </menus>
+    </MenuBar>
+      <ToolBar prefHeight="40.0" prefWidth="200.0">
+        <items>
+          <Button fx:id="startButton" mnemonicParsing="false" onAction="#startButtonClick">
+               <graphic>
+                  <ImageView fx:id="startBtnImage" fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true" />
+               </graphic>
+            </Button>
+            <Button fx:id="stopButton" mnemonicParsing="false" onAction="#stopButtonClick">
+               <graphic>
+                  <ImageView fx:id="stopBtnImage" fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true" />
+               </graphic>
+            </Button>
+        </items>
+      </ToolBar>
+      <SplitPane dividerPositions="0.657843137254902" prefHeight="599.0" prefWidth="1022.0">
+        <items>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="613.0" prefWidth="708.0">
+               <children>
+                  <TableView fx:id="requestTable" layoutY="-3.0" prefHeight="581.0" prefWidth="668.0">
+                    <columns>
+                      <TableColumn fx:id="idColumn" prefWidth="50.0" sortable="false" text="#" />
+                      <TableColumn fx:id="resultColumn" prefWidth="40.0" sortable="false" text="result" />
+                        <TableColumn fx:id="protocolColumn" prefWidth="60.0" sortable="false" text="protocol" />
+                        <TableColumn fx:id="hostColumn" sortable="false" text="host" />
+                        <TableColumn fx:id="urlColumn" prefWidth="200.0" sortable="false" text="url" />
+                        <TableColumn fx:id="bodyColumn" prefWidth="60.0" sortable="false" text="body" />
+                        <TableColumn fx:id="cachingColumn" prefWidth="60.0" sortable="false" text="caching" />
+                        <TableColumn fx:id="contentTypeColumn" prefWidth="90.0" sortable="false" text="contentType" />
+                        <TableColumn fx:id="processColumn" prefWidth="75.0" sortable="false" text="process" />
+                        <TableColumn fx:id="commentsColumn" prefWidth="75.0" sortable="false" text="comments" />
+                        <TableColumn fx:id="customColumn" prefWidth="75.0" sortable="false" text="custom" />
+                    </columns>
+                  </TableView>
+               </children>
+            </AnchorPane>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="613.0" prefWidth="221.0">
+               <children>
+                  <TabPane prefHeight="580.0" prefWidth="346.0" tabClosingPolicy="UNAVAILABLE">
+                    <tabs>
+                      <Tab text="Untitled Tab 1">
+                        <content>
+                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="584.0" prefWidth="431.0" />
+                        </content>
+                      </Tab>
+                      <Tab text="Untitled Tab 2">
+                        <content>
+                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                        </content>
+                      </Tab>
+                    </tabs>
+                  </TabPane>
+               </children>
+            </AnchorPane>
+        </items>
+      </SplitPane>
+  </children>
+</VBox>
