@@ -29,7 +29,7 @@ public class WingerRun extends Application {
 		} else {
 			System.out.println("参数错误！");
 		}*/
-		startServer("E:/practice/git/winger_feature/winger/src/main/resource/config.xml");
+		startServer("E:/mine/git/winger-feature/winger/src/main/resource/config.xml");
 	}
 	
 	private static void startServer(String xmlPath) throws IOException {

@@ -23,9 +23,10 @@ public class Test {
 	/**
 	 * main doc
 	 * @param args	123
+	 * @throws IOException 
 	 */
-	public static void main(String[] args) {
-		Map<String, Object> params = new HashMap<String, Object>();
+	public static void main(String[] args) throws IOException {
+		/*Map<String, Object> params = new HashMap<String, Object>();
 		params.put("id", 2);
 		params.put("value", 55);
 		Map<String, Object> test = new HashMap<String, Object>();
@@ -38,7 +39,8 @@ public class Test {
 		System.out.println(params.hashCode());
 		
 		test.put("address", "南京西路");
-		System.out.println(params.hashCode());
+		System.out.println(params.hashCode());*/
+		System.out.println(Resources.getResourceAsFile("/"));
 	}
 	
 	public void test1() {
