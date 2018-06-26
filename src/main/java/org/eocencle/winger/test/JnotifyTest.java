@@ -12,9 +12,8 @@ public class JnotifyTest {
 		}
 	}
 	public void test() throws Exception {
-		
 		//监控路径
-		String path = "C:\\Users\\Administrator\\Desktop\\web\\web";
+		String path = "C:/Users/dell/Desktop/test";
 		//可随意组合监听事件类型
 		int mask = JNotify.FILE_CREATED | JNotify.FILE_DELETED
 				| JNotify.FILE_MODIFIED | JNotify.FILE_RENAMED;

@@ -60,7 +60,9 @@ public class XmlBranchBuilder extends AbstractBuilder {
 					LOGGER.debug(e.getMessage());
 				}
 				
-				this.config.pushBranch(branch.getUrl(), branch);
+				if (this.config.pushBranch(branch.getUri(), branch)) {
+					LOGGER.info(branch.getUri() + " is repetitive");
+				}
 				
 				this.config.addUri(uri);
 			} catch (IllegalArgumentException e) {

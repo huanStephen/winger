@@ -1,15 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE configuration PUBLIC "-//www.eocencle.org//DTD Config 1.0//EN" "http://www.eocencle.org/winger/dtd/winger-1-config.dtd">
 <project contextPath="demo">
-	<server mode="own|other" port="8088" />
+	<server mode="own|other" port="8088" resourceBase="C:\Users\dell\Desktop\test">
+		<property name="resources">
+			<list>
+				<value>*.html</value>
+				<value>*.js</value>
+				<value>*.css</value>
+				<value>*.png</value>
+				<value>*.gif</value>
+				<value>*.jpg</value>
+				<value>*.ico</value>
+				<value>*.wav</value>
+				<value>*.json</value>
+				<value>*.eot</value>
+				<value>*.svg</value>
+				<value>*.ttf</value>
+				<value>*.woff</value>
+				<value>*.otf</value>
+			</list>
+		</property>
+	</server>
 	
 	<intercepters>
-		<intercepter class=""/>
+		<intercepter class="org.eocencle.winger.intercepter.ParamsIntercepter">
+			<property name="showCookies" type="boolean">true</property>
+			<property name="headers">
+				<array>
+					<value>Accept</value>
+					<value>Host</value>
+					<value>Referer</value>
+					<value>Accept-Charset</value>
+					<value>Accept-Encoding</value>
+				</array>
+			</property>
+			<property name="showParams" type="boolean">true</property>
+		</intercepter>
 	</intercepters>
 
-	<apis scan="org.eocencle.winger.api" genMode="invoke|spring"/>
+	<apis genMode="invoke"> 
+		<property name="jars">
+			<map>
+				<entry key="C:\Users\dell\Desktop\test\lib\service.jar" value="org.eocencle.service"/>
+			</map>
+		</property>
+	</apis>
 
-	<xmls>
+	<xmls updateMode="none|auto|hand">
 		<response resource="response.xml"/>
 	</xmls>
+	
+	<caches>
+		<cache name="response" open="true">
+			<property name="lazy">false</property>
+		</cache>
+	</caches>
 </project>

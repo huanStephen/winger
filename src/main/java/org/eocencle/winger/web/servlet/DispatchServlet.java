@@ -1,5 +1,7 @@
 package org.eocencle.winger.web.servlet;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 
 import javax.servlet.ServletConfig;
@@ -10,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eocencle.winger.io.Resources;
 import org.eocencle.winger.session.Session;
 import org.eocencle.winger.session.SessionFactory;
 import org.slf4j.Logger;
@@ -36,7 +37,7 @@ public class DispatchServlet extends HttpServlet {
 		}
 		
 		try {
-			this.session = new SessionFactory().build(Resources.getResourceAsStream(c), this.wac);
+			this.session = new SessionFactory().build(c, this.wac);
 		} catch (SAXException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

@@ -38,6 +38,21 @@ public class StrictMap<V> extends HashMap<String, V> {
 			throw new IllegalArgumentException(name + " already contains value for " + key);
 		return super.put(key, value);
 	}
+	
+	public boolean put(String key, V value, boolean ignore) {
+		if (ignore) {
+			boolean contain = this.containsKey(key);
+			super.put(key, value);
+			return contain;
+		} else {
+			try {
+				this.put(key, value);
+				return false;
+			} catch (Exception e) {
+				return true;
+			}
+		}
+	}
 
 	public V get(Object key) {
 		V value = super.get(key);

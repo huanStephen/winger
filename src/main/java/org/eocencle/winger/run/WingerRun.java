@@ -29,11 +29,13 @@ public class WingerRun extends Application {
 		} else {
 			System.out.println("参数错误！");
 		}*/
-		startServer("E:/mine/git/winger-feature/winger/src/main/resource/config.xml");
+		startServer("E:/practice/git/winger_feature/winger/src/main/resource/config.xml");
 	}
 	
 	private static void startServer(String xmlPath) throws IOException {
-		ServerBuilder builder = new ServerBuilder(new Configuration(), new XPathParser(new FileInputStream(new File(xmlPath))).evalNode("/project"));
+		Configuration config = new Configuration();
+		config.setConfigPath(xmlPath);
+		ServerBuilder builder = new ServerBuilder(config, new XPathParser(new FileInputStream(new File(xmlPath))).evalNode("/project"));
 		ServerThread thread = new ServerThread(builder.parse());
 		thread.start();
 	}

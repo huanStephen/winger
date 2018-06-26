@@ -11,6 +11,9 @@ import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.webapp.WebAppContext;
+import org.eocencle.winger.exceptions.IllegalParamException;
+import org.eocencle.winger.exceptions.ParamNotFoundException;
+import org.eocencle.winger.session.Configuration;
 import org.eocencle.winger.web.servlet.DispatchServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,23 +22,24 @@ public class JettyServer extends Server {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(JettyServer.class);
 	
-	private String contextPath;
-	
-	private String resourceBase;
-	
-	private List<String> resourceSuffixes;
+	private Configuration config;
 
-	public JettyServer(Integer port, String contextPath, String resourceBase, List<String> resourceSuffixes) {
-		super(port);
+	public JettyServer(Configuration config) throws IllegalParamException {
+		super(config.getPort());
 		
-		if (StringUtils.isNotBlank(contextPath)) {
-			this.contextPath = contextPath;
+		this.config = config;
+		
+		if (StringUtils.isBlank(config.getContextPath())) {
+			LOGGER.debug("ConfigPath not found!");
+			throw new ParamNotFoundException("ContextPath not found!");
 		}
-		if (StringUtils.isNotBlank(resourceBase)) {
-			this.resourceBase = resourceBase;
+		if (StringUtils.isBlank(config.getResourceBase())) {
+			LOGGER.debug("ResourceBase not found!");
+			throw new ParamNotFoundException("ResourceBase not found!");
 		}
-		if (null != resourceSuffixes) {
-			this.resourceSuffixes = resourceSuffixes;
+		if (null == config.getResourceSuffixes()) {
+			LOGGER.debug("ResourceSuffixes is null!");
+			throw new ParamNotFoundException("ResourceSuffixes is null!");
 		}
 		this.configServer();
 		this.applyHandle();
@@ -55,17 +59,18 @@ public class JettyServer extends Server {
 		
 		ContextHandlerCollection handler = new ContextHandlerCollection();
 		WebAppContext webapp = new WebAppContext();
-		webapp.setContextPath(this.contextPath);
-		webapp.setResourceBase(this.resourceBase);
+		webapp.setContextPath(this.config.getContextPath());
+		webapp.setResourceBase(this.config.getResourceBase());
 		
 		ServletHolder servlet = new ServletHolder();
 		servlet.setHeldClass(DispatchServlet.class);
-		servlet.setInitParameter("config", "config.xml");
+		servlet.setInitParameter("config", this.config.getConfigPath());
 		servlet.setInitOrder(1);
 		webapp.addServlet(servlet, "/");
 		
-		if (null != this.resourceSuffixes && 0 != this.resourceSuffixes.size()) {
-			for (String resourceSuffix : this.resourceSuffixes) {
+		List<String> resourceSuffixes = this.config.getResourceSuffixes();
+		if (null != resourceSuffixes && 0 != resourceSuffixes.size()) {
+			for (String resourceSuffix : resourceSuffixes) {
 				webapp.addServlet(DefaultServlet.class, resourceSuffix);
 			}
 		}
@@ -83,21 +88,5 @@ public class JettyServer extends Server {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-
-	public String getContextPath() {
-		return contextPath;
-	}
-
-	public void setContextPath(String contextPath) {
-		this.contextPath = contextPath;
-	}
-
-	public String getResourceBase() {
-		return resourceBase;
-	}
-
-	public void setResourceBase(String resourceBase) {
-		this.resourceBase = resourceBase;
 	}
 }

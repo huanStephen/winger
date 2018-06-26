@@ -49,7 +49,7 @@ public class CacheBuilder extends AbstractXmlBuilder {
 							if (n.getBooleanBody()) {
 								this.config.setResponseCache(openCache);
 							} else {
-								this.config.setResponseCache(new ResponseCache(this.config.getUris()));
+								this.config.setResponseCache(new ResponseCache(this.config.getUriList()));
 							}
 						} else {
 							this.config.setResponseCache(openCache);

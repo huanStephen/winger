@@ -16,7 +16,7 @@ public abstract class AbstractResponseBranch {
 	// 命名空间
 	protected String namespace;
 	// 完整url
-	protected String url;
+	protected String uri;
 	// 请求类型
 	protected String type = "GET";
 	
@@ -25,10 +25,10 @@ public abstract class AbstractResponseBranch {
 	public static String TYPE_PUT = "PUT";
 	public static String TYPE_DELETE = "DELETE";
 	
-	public AbstractResponseBranch(Configuration config, String namespace, String url) {
+	public AbstractResponseBranch(Configuration config, String namespace, String uri) {
 		this.config = config;
 		this.namespace = namespace;
-		this.url = url;
+		this.uri = uri;
 	}
 
 	/**
@@ -55,12 +55,12 @@ public abstract class AbstractResponseBranch {
 		this.namespace = namespace;
 	}
 
-	public String getUrl() {
-		return url;
+	public String getUri() {
+		return uri;
 	}
 
-	public void setUrl(String url) {
-		this.url = url;
+	public void setUri(String uri) {
+		this.uri = uri;
 	}
 
 	public String getType() {

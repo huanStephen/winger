@@ -1,8 +1,8 @@
 package org.eocencle.winger.session;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -21,20 +21,30 @@ import org.xml.sax.SAXException;
  */
 public class SessionFactory {
 	
-	public Session build(InputStream inputStream, ApplicationContext context) throws SAXException, IOException, ParserConfigurationException {
+	public Session build(File file, ApplicationContext context) throws SAXException, IOException, ParserConfigurationException {
 		Configuration config = new Configuration();
 		config.setContext(context);
-		ProjectBuilder builder = new ProjectBuilder(config, new XPathParser(inputStream));
+		String path = file.getPath();
+		config.setConfigPath(path);
+		if (-1 == path.indexOf("/")) {
+			config.setRoot(path.substring(0, path.lastIndexOf("\\")));
+		} else {
+			config.setRoot(path.substring(0, path.lastIndexOf("/")));
+		}
+		ProjectBuilder builder = new ProjectBuilder(config, new XPathParser(new FileInputStream(file)));
 		return this.build(builder.parse());
 	}
 	
-	public Session build(InputStream inputStream) throws SAXException, IOException, ParserConfigurationException {
-		ProjectBuilder builder = new ProjectBuilder(new Configuration(), new XPathParser(inputStream));
-		return this.build(builder.parse());
+	public Session build(String file, ApplicationContext context) throws SAXException, IOException, ParserConfigurationException {
+		return this.build(new File(file), context);
 	}
 	
-	public Session build(Reader reader) {
-		return null;
+	public Session build(File file) throws SAXException, IOException, ParserConfigurationException {
+		return this.build(file, null);
+	}
+	
+	public Session build(String file) throws SAXException, IOException, ParserConfigurationException {
+		return this.build(file, null);
 	}
 	
 	public Session build(Configuration config) {

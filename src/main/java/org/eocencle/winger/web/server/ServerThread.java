@@ -1,5 +1,6 @@
 package org.eocencle.winger.web.server;
 
+import org.eocencle.winger.exceptions.IllegalParamException;
 import org.eocencle.winger.session.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,11 +30,15 @@ public class ServerThread extends Thread {
 
 	@Override
 	public void run() {
-		LOGGER.info("Server port: " + this.config.getPort());
-		LOGGER.info("Server context path: " + this.config.getContextPath());
-		LOGGER.info("Server resource base: " + this.config.getResourceBase());
-		this.server = new JettyServer(this.config.getPort(), this.config.getContextPath(), this.config.getResourceBase(), this.config.getResourceSuffixes());
-		this.server.startServer();
+		try {
+			LOGGER.info("Server port: " + this.config.getPort());
+			LOGGER.info("Server context path: " + this.config.getContextPath());
+			LOGGER.info("Server resource base: " + this.config.getResourceBase());
+			this.server = new JettyServer(this.config);
+			this.server.startServer();
+		} catch (IllegalParamException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

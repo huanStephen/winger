@@ -46,7 +46,7 @@
 		</property>
 	</apis>
 
-	<xmls>
+	<xmls updateMode="none">
 		<response resource="response.xml"/>
 	</xmls>
 	

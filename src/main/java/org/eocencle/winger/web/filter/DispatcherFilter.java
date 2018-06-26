@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eocencle.winger.io.Resources;
 import org.eocencle.winger.session.Session;
 import org.eocencle.winger.session.SessionFactory;
 import org.springframework.web.context.WebApplicationContext;
@@ -32,7 +31,7 @@ public class DispatcherFilter implements Filter {
 			throw new RuntimeException("请填写配置文件！");
 		}
 		try {
-			this.session = new SessionFactory().build(Resources.getResourceAsStream(config), this.wac);
+			this.session = new SessionFactory().build(config, this.wac);
 		} catch (SAXException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

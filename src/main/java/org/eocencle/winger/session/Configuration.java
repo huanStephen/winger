@@ -16,6 +16,12 @@ import org.springframework.context.ApplicationContext;
 
 public class Configuration {
 
+	// 配置路径
+	private String configPath;
+	
+	// root目录
+	private String root;
+	
 	// 项目名称
 	private String contextPath;
 	
@@ -70,11 +76,18 @@ public class Configuration {
 	// SpringBean容器
 	private ApplicationContext context;
 	
+	// 更新模式
+	private String updateMode = "none";
+	
+	public static final String UPDATE_MODE_NONE = "none";
+	public static final String UPDATE_MODE_AUTO = "auto";
+	public static final String UPDATE_MODE_HAND = "hand";
+	
 	// xml响应文件
 	private Set<String> xmlRespFiles = new HashSet<String>();
 	
 	// uris
-	private List<String> uris = new ArrayList<String>();
+	private Set<String> uris = new HashSet<String>();
 	
 	// 响应缓存
 	private ResponseCache responseCache;
@@ -89,6 +102,22 @@ public class Configuration {
 		}
 	}
 	
+	public String getConfigPath() {
+		return configPath;
+	}
+
+	public void setConfigPath(String configPath) {
+		this.configPath = configPath;
+	}
+
+	public String getRoot() {
+		return root;
+	}
+
+	public void setRoot(String root) {
+		this.root = root;
+	}
+
 	public String getContextPath() {
 		return contextPath;
 	}
@@ -153,16 +182,16 @@ public class Configuration {
 		return jars;
 	}
 
-	public void pushBranch(String url, AbstractResponseBranch branch) {
-		this.branches.put(url, branch);
+	public boolean pushBranch(String uri, AbstractResponseBranch branch) {
+		return this.branches.put(uri, branch, true);
 	}
 	
 	public StrictMap<AbstractResponseBranch> getBranches() {
 		return this.branches;
 	}
 	
-	public AbstractResponseBranch getBranch(String url) {
-		return this.branches.get(url);
+	public AbstractResponseBranch getBranch(String uri) {
+		return this.branches.get(uri);
 	}
 	
 	public void pushFragment(String name, XNode node) {
@@ -197,6 +226,14 @@ public class Configuration {
 		this.context = context;
 	}
 
+	public String getUpdateMode() {
+		return updateMode;
+	}
+
+	public void setUpdateMode(String updateMode) {
+		this.updateMode = updateMode;
+	}
+
 	public Set<String> getXmlRespFiles() {
 		return xmlRespFiles;
 	}
@@ -209,12 +246,24 @@ public class Configuration {
 		return this.xmlRespFiles.contains(file);
 	}
 
-	public List<String> getUris() {
+	public Set<String> getUris() {
 		return uris;
+	}
+	
+	public List<String> getUriList() {
+		List<String> list = new ArrayList<String>();
+		for (String uri : this.uris) {
+			list.add(uri);
+		}
+		return list;
 	}
 	
 	public void addUri(String uri) {
 		this.uris.add(uri);
+	}
+	
+	public boolean contain(String uri) {
+		return this.uris.contains(uri);
 	}
 
 	public ResponseCache getResponseCache() {

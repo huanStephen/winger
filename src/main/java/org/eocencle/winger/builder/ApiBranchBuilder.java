@@ -3,7 +3,6 @@ package org.eocencle.winger.builder;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.JarURLConnection;
 import java.net.URL;
@@ -21,7 +20,6 @@ import org.eocencle.winger.mapping.ApiNamespace;
 import org.eocencle.winger.mapping.ApiResponseBranch;
 import org.eocencle.winger.session.Configuration;
 import org.eocencle.winger.util.JarLoaderUtil;
-import org.eocencle.winger.web.server.JettyServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
