@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eocencle.winger.builder.XmlResponseBuilder;
+import org.eocencle.winger.builder.XmlResponseRebuilder;
 import org.eocencle.winger.cache.ResponseCache;
 import org.eocencle.winger.intercepter.IntercepterEntity;
 import org.eocencle.winger.mapping.AbstractResponseBranch;
@@ -54,6 +56,9 @@ public class Configuration {
 	
 	// 扫描包路径
 	private StrictMap<String> jars = new StrictMap<String>("Jar Collection");
+	
+	// 重新加载器
+	private XmlResponseRebuilder rebuilder;
 	
 	// 响应分支集合
 	private StrictMap<AbstractResponseBranch> branches = new StrictMap<AbstractResponseBranch>("Response Branch Collection");
@@ -180,6 +185,14 @@ public class Configuration {
 
 	public StrictMap<String> getJars() {
 		return jars;
+	}
+
+	public XmlResponseRebuilder getRebuilder() {
+		return rebuilder;
+	}
+
+	public void setRebuilder(XmlResponseBuilder builder, String updateMode) {
+		this.rebuilder = new XmlResponseRebuilder(this, builder, updateMode);
 	}
 
 	public boolean pushBranch(String uri, AbstractResponseBranch branch) {

@@ -2,6 +2,7 @@ package org.eocencle.winger.builder;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
@@ -36,7 +37,9 @@ public class XmlResponseBuilder extends AbstractXmlBuilder {
 			// 加警告，无xml配置
 			return ;
 		}
-		this.config.setUpdateMode(node.getStringAttribute("updateMode", "none").toLowerCase());
+		String updateMode = node.getStringAttribute("updateMode", "none").toLowerCase();
+		this.config.setUpdateMode(updateMode);
+		this.config.setRebuilder(this, updateMode);
 	}
 
 	private void parseElements(XNode node) {
@@ -46,18 +49,23 @@ public class XmlResponseBuilder extends AbstractXmlBuilder {
 		}
 		List<XNode> nodes = node.getChildren();
 		String resource = null;
-		XmlResponseFileBuilder builder = null;
+		
 		for (XNode n : nodes) {
 			resource = n.getStringAttribute("resource");
 			if (null != resource) {
-				try {
-					resource = this.config.getRoot() + "/" + resource;
-					this.config.addXmlRespFile(resource);
-					builder = new XmlResponseFileBuilder(this.config, new XPathParser(new FileInputStream(new File(resource))), resource);
-					builder.parse();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				resource = this.config.getRoot() + "/" + resource;
+				this.config.addXmlRespFile(resource);
+				this.loadResponse(resource);
+			}
+		}
+	}
+	
+	public void loadResponse(String resource) {
+		if (this.config.xmlRespFileContains(resource)) {
+			try {
+				new XmlResponseFileBuilder(this.config, new XPathParser(new FileInputStream(new File(resource))), resource).parse();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
 			}
 		}
 	}

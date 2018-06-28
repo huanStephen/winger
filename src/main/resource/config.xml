@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE configuration PUBLIC "-//www.eocencle.org//DTD Config 1.0//EN" "http://www.eocencle.org/winger/dtd/winger-1-config.dtd">
 <project contextPath="demo">
-	<server mode="own" port="8088" resourceBase="C:\Users\dell\Desktop\test">
+	<server mode="own" port="8088" resourceBase="E:\mine\git\winger-feature\winger\resource">
 		<property name="resources">
 			<list>
 				<value>*.html</value>
