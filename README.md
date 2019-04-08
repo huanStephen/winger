@@ -14,6 +14,7 @@
 * 授权和验证
 
 # 功能演示
+* version1.0演示
 <p align="center">
     <img width="100%" src="https://github.com/huanStephen/winger/blob/feature/version1.0/demo.gif" alt="winger demo">
 </p>
