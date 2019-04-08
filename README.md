@@ -15,5 +15,5 @@
 
 # 功能演示
 <p align="center">
-    <img width="200" src="https://s1.ax1x.com/2018/11/25/Fkb1F1.png" alt="winger demo">
+    <img width="100%" src="https://github.com/huanStephen/winger/blob/feature/version1.0/demo.gif" alt="winger demo">
 </p>
