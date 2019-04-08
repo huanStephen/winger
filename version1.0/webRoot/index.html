@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+	<meta charset="utf-8">
+	<title>dome</title>
+	<style>
+		tr{text-align: center; COLOR: #0076C8; BACKGROUND-COLOR: #F4FAFF; font-weight: bold}	
+	</style>
+</head>
+
+<body>
+	<input type="button" class="staticBtn" value="获取数据" style="margin-bottom: 10px;" />
+	<table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #b9d8f3;">
+		<thead>
+			<tr>
+				<td>id</td>
+				<td>name</td>
+				<td>introduce</td>
+				<td>creatorid</td>
+				<td>iconPath</td>
+				<td>filePath</td>
+			</tr>
+		</thead>
+		<tbody></tbody>
+	</table>
+	
+	<div class="tdv">
+		<h3>测试动态数值数据</h3>
+		
+		<span class="age"></span>
+		<input type="button" class="btn" value="获取数据" />
+		
+		<hr/>
+	</div>
+	<div class="tdc">
+		<h3>测试动态内容数据</h3>
+		
+		<span class="introduce"></span>
+		<input type="button" class="btn" value="获取数据" />
+		
+		<hr/>
+	</div>
+	<div class="tdj">
+		<h3>测试动态判断数据</h3>
+		
+		<span class="username"></span>---
+		<span class="password"></span>---
+		<span class="age"></span>---
+		<span class="sex"></span>
+		<input type="text" class="in" />
+		<input type="button" class="btn" value="获取数据" />
+		
+		<hr/>
+	</div>
+	<div class="tda">
+		<h3>测试动态数组数据</h3>
+		
+		<div class="container"></div>
+		<input type="button" class="btn" value="获取数据" />
+		
+		<hr/>
+	</div>
+	<div class="tdo">
+		<h3>测试动态对象数据</h3>
+		
+		<div class="container"></div>
+		<input type="button" class="btn" value="获取数据" />
+		
+		<hr/>
+	</div>
+
+	<!-- jQuery -->
+	<script src="jquery.js"></script>
+	
+	<script>
+		$(function() {
+			$('.staticBtn').click(function() {
+				$.get('/demo/item/getItems', {currPage : 8, size : 5}, function(data) {
+					
+					var d = eval('(' + data + ')');
+					
+					var row = $('<tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>');
+					var tbody = $('tbody');
+					var list = d.list;
+					
+					for(index in list) {
+						
+						var inrow = row.clone();
+						inrow.children('td:eq(0)').text(list[index].id);
+						inrow.children('td:eq(1)').text(list[index].name);
+						inrow.children('td:eq(2)').text(list[index].introduce);
+						inrow.children('td:eq(3)').text(list[index].creatorid);
+						inrow.children('td:eq(4)').text(list[index].iconPath);
+						inrow.children('td:eq(5)').text(list[index].filePath);
+						
+						tbody.append(inrow);
+					}
+				});
+			});
+			
+			$('.tdv .btn').click(function() {
+				$.get('/demo/test/dynamic/value', function(data) {
+					console.log(data);
+					var d = eval('(' + data + ')');
+					$('.tdv .age').text(d.age);
+				});
+			});
+			
+			$('.tdc .btn').click(function() {
+				$.get('/demo/test/dynamic/content', function(data) {
+					console.log(data);
+					var d = eval('(' + data + ')');
+					$('.tdc .introduce').text(d.introduce);
+				});
+			});
+			
+			$('.tdj .btn').click(function() {
+				$.get('/demo/test/dynamic/judge', {id : $('.tdj .in').val()}, function(data) {
+					console.log(data);
+					var d = eval('(' + data + ')');
+					$('.tdj .username').text(d.username);
+					$('.tdj .password').text(d.password);
+					$('.tdj .age').text(d.age);
+					$('.tdj .sex').text(d.sex);
+				});
+			});
+			
+			$('.tda .btn').click(function() {
+				$.get('/demo/test/dynamic/array', function(data) {
+					console.log(data);
+					var array = eval('(' + data + ')').list;
+					var row = $('<div><span></span>---<span></span>---<span></span>---<span></span><br/><div>');
+					var container = $('.tda .container');
+					for(index in array) {
+						var r = row.clone();
+						r.children(':eq(0)').text(array[index].username);
+						r.children(':eq(1)').text(array[index].password);
+						r.children(':eq(2)').text(array[index].age);
+						r.children(':eq(3)').text(array[index].sex);
+						container.append(r);
+					}
+				});
+			});
+			
+			$('.tdo .btn').click(function() {
+				$.get('/demo/test/dynamic/object', function(data) {
+					console.log(data);
+					var d = eval('(' + data + ')');
+					var row = $('<div><span></span><br/></div>');
+					var container = $('.tdo .container');
+					var r = row.clone();
+					r.children(':first').text(d.result);
+					container.append(r);
+					r = row.clone();
+					r.children(':first').text(d.object.username + '---' + d.object.password + '---' + d.object.age + 
+							'---' + d.object.sex);
+					container.append(r);
+				});
+			});
+		
+			$.ajax({
+				   url : "http://localhost:8080/test/put",
+				   type : "get",
+				   data : {
+					app_key: '1234567890',
+					title: '近期深陷熊市的创业板指反弹',
+					content: '近期深陷熊市的创业板指反弹的同时,一些电子、白酒、家电类传统白马股走势依然可喜,昨日也纷纷创出了新高。海康威视、大华股份等股票年内大涨超过60%,五粮液、泸州老窖等大涨超过50%,万和电气、青岛海尔等个股涨幅也达到50%。　　上述现象表明,“二八行情”仍在。有分析人士表示,对比此前创业板2012年底至2014年的“双创”行情而同期大盘股低迷期,“漂亮50”代表的行情延续时间仍不够充分,并且估值还有向上的空间。比如四大行最新的市盈率都在6.5倍以下,今年市盈率20多倍的五粮液等股票市盈率相对盈利增长比率(PEG)也仅在1左右,格力电器等PEG更是低至0.6左右。为了寻找其中尚未充分表现的股票,数据宝筛选出6月以来股价创年内新高、但年内股价涨幅相对较小(小于30%)的绩优股,合计共有37只股票。从今年预测市盈率角度看,除了四大行超低估值外,上汽集团、华域汽车等个股市盈率均低于10倍,川投能源、中国石化、鲁泰A、国投电力、南方航空等个股市盈率低于15倍。',
+					server_type: '1,2,3'
+				   },
+				   //JSON.stringify({"title":"近期深陷熊市的创业板指反弹","content":'近期深陷熊市的创业板指反弹的同时,一些电子、白酒、家电类传统白马股走势依然可喜,昨日也纷纷创出了新高。海康威视、大华股份等股票年内大涨超过60%,五粮液、泸州老窖等大涨超过50%,万和电气、青岛海尔等个股涨幅也达到50%。　　上述现象表明,“二八行情”仍在。有分析人士表示,对比此前创业板2012年底至2014年的“双创”行情而同期大盘股低迷期,“漂亮50”代表的行情延续时间仍不够充分,并且估值还有向上的空间。比如四大行最新的市盈率都在6.5倍以下,今年市盈率20多倍的五粮液等股票市盈率相对盈利增长比率(PEG)也仅在1左右,格力电器等PEG更是低至0.6左右。为了寻找其中尚未充分表现的股票,数据宝筛选出6月以来股价创年内新高、但年内股价涨幅相对较小(小于30%)的绩优股,合计共有37只股票。从今年预测市盈率角度看,除了四大行超低估值外,上汽集团、华域汽车等个股市盈率均低于10倍,川投能源、中国石化、鲁泰A、国投电力、南方航空等个股市盈率低于15倍。',"data_count":"50","app_key":"1234567890",server_type:"1,2,3"}),
+				   contentType: "application/json",
+				   dataType:"jsonp",
+				   success : function(data) {
+					console.log(data);
+				   },
+				   error:function(XMLHttpRequest, textStatus, errorThrown) {
+					   alert(XMLHttpRequest.status);
+					   alert(XMLHttpRequest.readyState);
+					   alert(textStatus);
+					}
+			});
+		});
+	</script>
+	
+</body>
+
+</html>
