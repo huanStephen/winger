@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<response contextPath="/demo">
+	<branch path="/item/getItems" type="get">
+		<static>
+			<![CDATA[{
+				currPage : 8, 
+				totalPage : 50, 
+				list : [
+					{id : 1, name : 'eocencle', introduce : '测试内容', creatorid : 6, iconPath: 'item/eocencle', filePath: 'item/eocencle'}, 
+					{id : 2, name : 'snail', introduce : '测试', creatorid : 6, iconPath: 'item/eocencle', filePath: 'filePath/snail'},
+					{id : 3, name : 'item1', introduce : 'introduce', creatorid : 6, iconPath: 'item/eocencle', filePath: 'item/item1'}, 
+					{id : 4, name : 'item2', introduce : 'introduce', creatorid : 6, iconPath: 'item/eocencle', filePath: 'item/item2'},
+					{id : 5, name : 'sepa', introduce : 'introduce', creatorid : 6, iconPath: 'item/eocencle', filePath: 'item/sepa'}
+				]
+			}]]>
+		</static>
+	</branch>
+	
+	<branch path="/test/dynamic/value" type="get">
+		<dynamic>
+			<field name="age" value="21" />
+		</dynamic>
+	</branch>
+	
+	<branch path="/test/dynamic/content" type="get">
+		<dynamic>
+			<field name="introduce">
+				<content>
+					<![CDATA[SOP是Standard Operating Procedure三个单词中首字母的大写 ，
+						即标准作业程序，就是将某一事件的标准操作步骤和要求以统一的格式描述出来，
+						用来指导和规范日常的工作。]]>
+				</content>
+			</field>
+		</dynamic>
+	</branch>
+	
+	<branch path="/test/dynamic/judge" type="get">
+		<dynamic>
+			<field name="username" default="'王五'">
+				<if test="params.id == 1">
+					<![CDATA[张三]]>
+				</if>
+				<if test="params.id == 2">
+					<![CDATA[李四]]>
+				</if>
+			</field>
+			<field name="password" default="'aaaaaa'">
+				<if test="params.id == 1">
+					<![CDATA[123456]]>
+				</if>
+				<if test="params.id == 2">
+					<![CDATA[abcdef]]>
+				</if>
+			</field>
+			<field name="age" default="30">
+				<if test="params.id == 1" value="20" />
+				<if test="params.id == 2" value="25" />
+			</field>
+			<field name="sex" default="true">
+				<if test="params.id == 1" value="true" />
+				<if test="params.id == 2" value="false" />
+			</field>
+		</dynamic>
+	</branch>
+	
+	<branch path="/test/dynamic/array" type="get">
+		<dynamic>
+			<field name="list">
+				<array>
+					<element>
+						<field name="username">
+							<content><![CDATA[张三]]></content>
+						</field>
+						<field name="password">
+							<content><![CDATA[123456]]></content>
+						</field>
+						<field name="age" value="20" />
+						<field name="sex" value="true" />
+					</element>
+					<element>
+						<field name="username">
+							<content><![CDATA[李四]]></content>
+						</field>
+						<field name="password">
+							<content><![CDATA[abcdef]]></content>
+						</field>
+						<field name="age" value="25" />
+						<field name="sex" value="false" />
+					</element>
+				</array>
+			</field>
+		</dynamic>
+	</branch>
+	
+	<branch path="/test/dynamic/object" type="get" >
+		<dynamic>
+			<field name="result" value="true"/>
+			<field name="object">
+				<field name="username">
+					<content><![CDATA[张三]]></content>
+				</field>
+				<field name="password">
+					<content><![CDATA[123456]]></content>
+				</field>
+				<field name="age" value="20" />
+				<field name="sex" value="true" />
+			</field>
+		</dynamic>
+	</branch>
+</response>
